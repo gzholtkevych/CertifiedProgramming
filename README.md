@@ -26,3 +26,7 @@
 > **CoqScripts** - директорія з прикладами Coq-скриптів </br>
 >> SPSC.v - скрипт проєкту простого стекового обчислювача </br>
 >> TPSC.v - скрипт проєкту типізованого стекового обчислювача
+
+## Посилання на джерела
+
+1. [Adam Chlipala. Certified Programming with Dependent Types](http://adam.chlipala.net/cpdt/)
