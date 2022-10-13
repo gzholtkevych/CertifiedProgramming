@@ -1,7 +1,24 @@
-Require Import Lists.List.
+Require Import Coq.Lists.List.
 Import ListNotations.
 
+(* Про цей проєкт:
+   -------------------------------------------------------------------------- 
+   Розглядаються арифметичні вирази з операціями додавання та множення над
+   натуральними числами.
+   Для цих виразів визначається синтаксична структура виразів та їх
+   семантичне значення, яким є результат прямого обчислення відповідного
+   виразу.
 
+   Розглядається також простий програмований стековий обчислювач, пам'ятю
+   якого є стек натуральних чисел, а команди мають наступний формат
+      save n, де n є натуральне число
+      eval op, де op є символ операції Plus або Mult 
+
+   Мета прєкту: побудувати транслятор, який перетворює вираз на програму для
+   простого стекового обчислювача, яка обчислює вираз
+   -------------------------------------------------------------------------- *)
+
+(* ========================================================================== *)
 (* Синтаксична модель виразу  =============================================== *)
 (* Припустимо, що вираз будується за допомогою бінарних операцій Plus та Mult.
    Тому визначимо тип "binop" - бінарна операція шляхом перелічення:  
@@ -37,8 +54,8 @@ Inductive expr : Set :=
    натуральних аргументів                                                     *)
 Definition binopDenote (b : binop) : nat -> nat -> nat :=
   match b with
-    Plus => plus
-  | Mult => mult
+    Plus => plus |
+    Mult => mult
   end.
 
 (* Дослідження функцій plus та mult з стандартної бібліотеки ---------------- *)
@@ -52,8 +69,8 @@ Definition binopDenote (b : binop) : nat -> nat -> nat :=
 (* Інтерпретація виразів                                                      *)
 Fixpoint exprDenote (e : expr) : nat :=
   match e with
-    Const n       => n
-  | Binop b e1 e2 => binopDenote b (exprDenote e1) (exprDenote e2)
+    Const n       => n |
+    Binop b e1 e2 => binopDenote b (exprDenote e1) (exprDenote e2)
   end.
 
 (* Як це працює? Приклади виразів та їх інтерпретації ----------------------- *)
@@ -64,7 +81,7 @@ Eval simpl in exprDenote c3.
 Example ePlus_c2_c3 := Binop Plus c2 c3.
 Eval simpl in exprDenote ePlus_c2_c3.
 Example c4 := Const 4.
-Eval simpl in c4.
+Eval simpl in exprDenote c4.
 Example eMult_ePlus_c2_c3_c4 := Binop Mult ePlus_c2_c3 c4.
 Eval simpl in exprDenote eMult_ePlus_c2_c3_c4.
 
@@ -100,27 +117,27 @@ Eval simpl in exprDenote eMult_ePlus_c2_c3_c4.
 
 Definition stack := list nat.      (* пам'ять обчислювача    *)
 Inductive instr : Set :=           (* інструкції обчислювача *)
-    save : nat -> instr
-  | eval : binop -> instr.
+    save : nat -> instr |
+    eval : binop -> instr.
 Definition program := list instr.  (* програма обчислювача   *)
 
 (* Інтерпретація інструкцій обчислювача                                       *)
 Definition instrDenote (i : instr) (s : stack) : option stack :=
   match i with
-    save n => Some (n :: s)
-  | eval b => match s with
-                n :: m :: s' => Some ((binopDenote b n m) :: s')
-              | _            => None
+    save n => Some (n :: s) |
+    eval b => match s with
+                n :: m :: s' => Some ((binopDenote b n m) :: s') |
+                _            => None
               end
   end.
 
 (* Виконання програми з певного стану стеку                                   *)
 Fixpoint execute (p : program) (s : stack) : option stack :=
   match p with
-    nil     => Some s
-  | i :: p' => match instrDenote i s with
-                 None    => None
-               | Some s' => execute p' s'
+    nil     => Some s |
+    i :: p' => match instrDenote i s with
+                 None    => None |
+                 Some s' => execute p' s'
                end
   end.
 
