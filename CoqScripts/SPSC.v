@@ -150,7 +150,7 @@ Definition programDenote (p : program) : option stack := execute p nil.
 Fixpoint compile (e : expr) : program :=
   match e with
     Const n => save n :: nil
-  | Binop b e1 e2 => (compile e2) ++ (compile e1) ++ eval b :: nil
+  | Binop b e1 e2 => (compile e2) ++ (compile e1) ++ [eval b]
   end.
 
 (* Як це працює? Приклад компіляції                                           *)
@@ -183,6 +183,7 @@ Proof.
   intro.
   induction e.
   - unfold programDenote. simpl. reflexivity.
+  -
 Abort.
 
 (* Принцип послідовної компіляції ------------------------------------------- *)
