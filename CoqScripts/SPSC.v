@@ -149,7 +149,7 @@ Definition programDenote (p : program) : option stack := execute p nil.
    обчислювача ============================================================== *)
 Fixpoint compile (e : expr) : program :=
   match e with
-    Const n => save n :: nil
+    Const n => [save n]
   | Binop b e1 e2 => (compile e2) ++ (compile e1) ++ [eval b]
   end.
 
@@ -182,7 +182,7 @@ Theorem correctness : forall e : expr,
 Proof.
   intro.
   induction e.
-  - unfold programDenote. simpl. reflexivity.
+  - unfold programDenote. (*simpl. reflexivity*) trivial.
   -
 Abort.
 
@@ -192,7 +192,7 @@ Lemma seq_calc : forall (s : stack) (e : expr) (p : program),
 Proof.
   intros until e. revert s.
   induction e.
-  - intros. simpl. reflexivity.
+  - intros. trivial.
   - intros. simpl.
 Abort.
 
@@ -213,8 +213,7 @@ Proof.
     rewrite app_assoc_reverse.
     rewrite IHe2.
     rewrite app_assoc_reverse. simpl.
-    rewrite IHe1. simpl.
-    reflexivity. 
+    rewrite IHe1. trivial. 
 Qed.
 
 Print Term seq_calc.
@@ -225,9 +224,8 @@ Proof.
   intros.
   induction e.
   -(* індукція для Const *)
-    simpl. unfold programDenote. simpl. reflexivity.
+    simpl. unfold programDenote. trivial.
   -(* індукція для Binop *)
     simpl. unfold programDenote.
-    repeat rewrite seq_calc. simpl.
-    reflexivity.
+    repeat rewrite seq_calc. trivial.
 Qed.

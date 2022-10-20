@@ -6,26 +6,25 @@ Import ListNotations.
 
 (* Фіксуємо два типи - натуральний та булевий                                 *)
 Inductive type := Nat : type | Bool : type.
+Check type.
 (* Визначаємо також функцію D, що співставляє визначеним типам їх домени -
    множини значень                                                            *)
-Check type.
-Definition D : type -> Set := fun t =>
-  match t with Nat => nat | Bool => bool end.
+Definition D : type -> Set :=
+  fun t => match t with Nat => nat | Bool => bool end.
 Print Term D.
 
 (* Бінарна операція тепер параметризується трійкою типів:
    тип першого операнда, тип другого операнда і тип результату                *)
 Inductive binop : type -> type -> type -> Set :=
-  NPlus : binop Nat Nat Nat
-| NMult : binop Nat Nat Nat
-| TEq : forall t, binop t t Bool
-| NLt : binop Nat Nat Bool.
+  NPlus : binop Nat Nat Nat |
+  NMult : binop Nat Nat Nat |
+  TEq : forall t, binop t t Bool |
+  NLt : binop Nat Nat Bool.
 
-(* Вираз тепер параметризується типом - типом цього виразу                    *)
+(* Вираз тепер параметризується типом - типом знчень цього виразу                    *)
 Inductive expr : type -> Set :=
-| Const : forall t, D t -> expr t
-| Binop :
-    forall t1 t2 t, binop t1 t2 t -> expr t1 -> expr t2 -> expr t.
+  Const : forall t, D t -> expr t |
+  Binop : forall t1 t2 t, binop t1 t2 t -> expr t1 -> expr t2 -> expr t.
 (* Для конструктора Binop визначемо параметри операції як такі,
    які The Coq Proof Assistant має встановити шляхом самостійно за контекстом *)
 Arguments Binop {t1 t2 t}.
@@ -34,35 +33,35 @@ Print Term expr.
 (* Інтерпретація простих типізованих виразів як значень відповідних типів === *)
 
 (* Функції, що використовуються для інтерпретації --------------------------- *)
-Fixpoint beq_nat (n m : nat) : bool :=
-  match n,m with
-    0, 0       => true
-  | 0, S _     => false
-  | S _, 0     => false
-  | S n', S m' => beq_nat n' m'
+Fixpoint beq_nat (n m : nat) {struct n} : bool :=
+  match n, m with
+    0, 0       => true |
+    0, S _     => false |
+    S _, 0     => false |
+    S n', S m' => beq_nat n' m'
   end. (* булев тест щодо рівностті натуральних чисел *)
 Print Term beq_nat.
 
 Definition beq_bool (b1 b2 : bool) : bool :=
   match b1, b2 with
-    true, true   => true
-  | false, false => true
-  | _, _         => false
+    true, true   => true |
+    false, false => true |
+    _, _         => false
   end. (* булев тест щодо рівності булевих значень *)
 
-Fixpoint blt_nat (n m : nat) : bool :=
+Fixpoint blt_nat (n m : nat) {struct n} : bool :=
   match n, m with
-    _, 0       => false
-  | 0, S _     => true
-  | S n', S m' => blt_nat n' m'
+    _, 0       => false |
+    0, S _     => true |
+    S n', S m' => blt_nat n' m'
   end. (* булев тест відношення меньше натуральних чисел *)
 
 (* Інтерпретація бінарних операцій відповідними функціями з виеористаннм
    технікм визначення шляхом доведення.
    Аргументи t1 t2 t є такими, які The Coq Proof Assistant має встановити
    за контекстом                                                              *)
-Definition binopDenote {t1 t2 t : type} (b : binop t1 t2 t)
-: D t1 -> D t2 -> D t.
+Definition binopDenote {t1 t2 t : type} (b : binop t1 t2 t) :
+  D t1 -> D t2 -> D t.
 Proof.
   intros a1 a2.
   destruct b.
