@@ -11,6 +11,8 @@
 Require Import Lists.List.
 Import ListNotations.
 
+Print comparison.
+
 
 Module Type CMP_CORE.
   (* Специфікація даних, що відповідають задачі сортування                    *)
@@ -97,7 +99,7 @@ Module Type CMP_ORDER.
   Parameter sorted : list data -> Prop.
 
   Axiom eq_dec : forall x y : data, {x = y} + {x <> y}.
-
+(*
   Parameter same : list data -> list data -> Prop.
 
   Axiom same_rfl : forall xs : list data, same xs xs.
@@ -106,7 +108,7 @@ Module Type CMP_ORDER.
 
   Axiom same_trn : forall xs ys zs : list data,
     same xs ys -> same ys zs -> same xs zs.
-
+*)
 End CMP_ORDER.
 
 
@@ -179,12 +181,14 @@ Module TO_CMP_ORDER (M : CMP_CORE) : CMP_ORDER
     - now left.
     - right. intro. rewrite H0 in H. revert H. exact (lt_irrf y).
   Qed.
-
+(*
   Definition same (xs ys : list data) : Prop :=
     forall x : data, count_occ eq_dec xs x = count_occ eq_dec ys x. 
-
+*)
 End TO_CMP_ORDER.
 
 
 Module NatCMP_ORDER := TO_CMP_ORDER NatCMP_CORE.
+
+Check NatCMP_ORDER.lt_dec.
 
