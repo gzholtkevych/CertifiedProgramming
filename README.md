@@ -6,7 +6,7 @@
 
 **E-mail:** `g.zholtkevych@karazin.ua`
 
-<img src="./Images/Zholtkevych (fine).jpg"></img>
+<img src="/blob/main/Image/Zholtkevych%20(fine).jpg"/>
 
 
 
