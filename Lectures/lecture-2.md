@@ -55,4 +55,14 @@ Inductive expr :=
 | Binop : binop -> expr -> expr -> expr.
 ```
 
+Приклади дерев, що моделюють арифметичні вирази
+
+```mermaid
+graph TD;
+  subgraph Const 2
+    A(Const)-->B[2];
+  end
+```
+
+
 </details>
