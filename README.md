@@ -2,11 +2,19 @@
 
 ---
 
+
+
+<table width=600px border=0px>
+<tr><td width=30%><img src="/Image/Zholtkevych%20(fine).jpg"/>
+</td><td>
+  
 **Власник:** проф. Григорій ЖОЛТКЕВИЧ, д.т.н., професор кафедри теоретичної та прикладної інформатики Харківського національного університету імені В.Н. Каразіна, Харків, Україна
 
 **E-mail:** `g.zholtkevych@karazin.ua`
+</td></tr> 
+</table>
 
-<img src="/blob/main/Image/Zholtkevych%20(fine).jpg"/>
+
 
 
 
