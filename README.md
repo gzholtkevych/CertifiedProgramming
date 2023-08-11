@@ -6,6 +6,8 @@
 
 **E-mail:** `g.zholtkevych@karazin.ua`
 
+<img src="./Images/Zholtkevych (fine).jpg"></img>
+
 
 
 Цей репозиторій містить набір файлів щодо формальної верифікації програмного забезпечення з використання The Coq Proof Assistant.
