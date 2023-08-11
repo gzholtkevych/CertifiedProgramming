@@ -24,7 +24,7 @@ Import ListNotations.
    Тому визначимо тип "binop" - бінарна операція шляхом перелічення:  
      binop -> Plus | Mult                                                     *)
 
-Inductive binop : Set := Plus | Mult.
+Inductive binop := Plus | Mult.
 
 (* Дослідження індуктивного визначення для binop ---------------------------- *)
 (*   Який тип має binop?:      *) Check binop.
@@ -32,8 +32,8 @@ Inductive binop : Set := Plus | Mult.
 (*   Який тип має Plus?:       *) Check Plus.
 (*   Який тип має Mult?:       *) Check Mult.
 (*   Який тип має binop_ind?:  *) Check binop_ind.
-(*   Який тип має binop_rec?:  *) Check binop_rec.   
-(*   Який тип має binop_rect?: *) Check binop_rect.  
+(*   Який тип має binop_rec?:  *) Check binop_rec.
+(*   Який тип має binop_rect?: *) Check binop_rect.
 
 (* Визнначення типу "expr" - вираз у відповідності до граматичних правил:
      expr -> 'Const' nat | 'Binop' b expr expr                                *)
