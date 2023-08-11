@@ -7,4 +7,21 @@
 Маємо арифметичні вирази, які оперують з натуральними константами за допомогою бінарних операцій додавання і множення.
 
 Абстрактний синтаксис мови арифметичних виразів визначається наступними правилами
-$\begin{array}{ccc}\dfrac{n\texttt{ is a natural number}}{\mathtt{const}\ n\texttt{ is an arithmetic expression}}&\dfrac{e_1,e_2\texttt{ are arithmetic expressions}}{}&\end{array}$
+
+<table width=800px height=150px align="center">
+<tr><td align="center">
+$\mathtt{binop}\textbf{ is either }\mathtt{plus}\textbf{ or }\mathtt{mult}$</td></tr><tr><td align="center">
+$\dfrac{n\textbf{ is a natural number}}{\mathtt{const}\ n\textbf{ is an arithmetic expression}}$</td></tr><tr><td align="center">
+$\dfrac{e_1,e_2\textbf{ are arithmetic expressions and }bop\textbf{ is a binop}}{\mathtt{term}\ bop\ e_1\ e_2\textbf{ is an arithmetic expression}}$</td></tr>
+</table>
+
+Семантичним значенням арифметичного виразу будемо вважати натуральне число, яке є результатом обчислення цього виразу.
+
+Розглянемо також обчислювач, пам'ять якого представляє собою стек натуральних чисел.
+
+Програма обчислювача є послідовністю команд, кожна з яки є або
+- команда $\mathtt{save}\ n$, яка проштовхує $n$ в стек, або
+- команда $\mathtt{eval}\ bop$, яка виконує операцію, що визначається значенням $bop$ над двома числами з вершини стеку, видалючі їх і проштовхуючи результат в стек.
+Зрозуміло, що ця команда може виконуватися тільки у випадку, якщо у стеку зберігається не менше двох чисел.
+
+Задачею є побудова програми, яка приймає арифметичний вираз та повертає програму для описаного обчислювача, яка обчислює цей арифметичний вираз.
