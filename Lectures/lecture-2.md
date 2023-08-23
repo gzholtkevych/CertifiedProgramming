@@ -30,15 +30,15 @@
 
 <details><summary><H2>Необхідні типи даних для представлення арифметичних виразів</H2></summary>
 
-Спроєктуємо та специфікуємо ці типи даних, використовуючи The Coq Proof Assistant.
+Спроєктуємо та специфікуємо yеобхідні типи даних для представлення арифметичних виразів, використовуючи The Coq Proof Assistant.
 
 Першим нашим кроком буде специфікація типу даних `binop`, призначеного для представлення символів бінарних операцій:
 
 ```
-Inductive binop := plus | mult.
+Inductive binop := PLUS | MULT.
 ```
-Це визначення вводить новий тип з іменем `biniop`, в якому живуть лише дві константи `plus` та `mult`.
-Формальною гарантією того, що ніякі інші сутності окрім `plus` та `mult` не живуть в `biniop` представляється такими твердженнями
+Це визначення вводить новий тип з іменем `biniop`, в якому живуть лише дві константи `PLUS` та `MULT`.
+Формальною гарантією того, що ніякі інші сутності окрім `PLUS` та `MULT` не живуть в `biniop` представляється такими твердженнями
 
 ```
 binop_ind  : forall P : binop -> Prop, P Plus -> P Mult -> forall b : binop, P b
@@ -51,18 +51,17 @@ binop_rect : forall P : binop -> Type, P Plus -> P Mult -> forall b : binop, P b
 
 ```
 Inductive expr :=
-  Const : nat -> expr
-| Binop : binop -> expr -> expr -> expr.
+  const : nat -> expr
+| term : binop -> expr -> expr -> expr.
 ```
 
 Приклади дерев, що моделюють арифметичні вирази
 
 ```mermaid
 graph TD;
-  subgraph Const 2
-    A(Const)-->B[2];
+  subgraph const 2
+    A(const)-->B[2];
   end
 ```
-
 
 </details>
