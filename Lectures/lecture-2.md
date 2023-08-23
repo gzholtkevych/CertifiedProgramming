@@ -7,15 +7,15 @@
 Маємо арифметичні вирази, які оперують з натуральними константами за допомогою бінарних операцій додавання і множення.
 
 Абстрактний синтаксис мови арифметичних виразів визначається наступними правилами
+- $\mathtt{binop}$ є або $\mathtt{PLUS}$, або $\mathtt{MULT}$
+- $\mathtt{const}\ n$ є арифметичним виразом, якщо $n$ є натуральним числом
+- $\mathtt{term}\ bop\ e_1\ e_2$ є арифметичним виразом, якщо $bop$ є представником $\mathtt{binop}$, а $e_1$ та $e_2$ є арифметичними виразами
 
-<table width=800px height=150px align="center">
-<tr><td align="center">
-$\mathtt{binop}\textbf{ is either }\mathtt{plus}\textbf{ or }\mathtt{mult}$</td></tr><tr><td align="center">
-$\dfrac{n\textbf{ is a natural number}}{\mathtt{const}\ n\textbf{ is an arithmetic expression}}$</td></tr><tr><td align="center">
-$\dfrac{e_1,e_2\textbf{ are arithmetic expressions and }bop\textbf{ is a binop}}{\mathtt{term}\ bop\ e_1\ e_2\textbf{ is an arithmetic expression}}$</td></tr>
-</table>
+Семантичним значенням арифметичного виразу $e$ будемо вважати натуральне число $\mathtt{denote}\ e$, яке цей вираз представляє.
 
-Семантичним значенням арифметичного виразу будемо вважати натуральне число, яке є результатом обчислення цього виразу.
+Детальніше,
+- $\mathtt{denote}\ e:=n$, якщо $e\equiv\mathtt{const}\ n$
+- $\mathtt{denote}\ e:=\mathtt{denote}\ e_1+\mathtt{denote}\ e_2$, якщо $e\equiv\mathtt{term}\ \mathtt{PLUS}\ e_1\ e_2$, де $e_1$ та $e_2$ є арифметичними виразами
 
 Розглянемо також обчислювач, пам'ять якого представляє собою стек натуральних чисел.
 
