@@ -25,7 +25,7 @@ Proof.
  repeat constructor. Qed.
 
 Fixpoint occnum (n : nat) (lst : list nat) : nat :=
-  (* кількість входжень числа n в список lst                                  *)
+  (* кількість входжень числа n в список lst                                 *)
   match lst with
   | [] => 0
   | m :: lst' => if Nat.eq_dec n m then S (occnum n lst') else occnum n lst'
