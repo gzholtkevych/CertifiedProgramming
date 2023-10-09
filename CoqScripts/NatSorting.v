@@ -1,10 +1,7 @@
 Require Import Lists.List.
 Import ListNotations.
 Require Import Arith.PeanoNat.
-<<<<<<< HEAD
-=======
 Require Import Arith.Compare_dec.
->>>>>>> 1e9902568d2228a2e40f35ac4fd50b1cdda8a0ac
 
 
 Inductive sorted : list nat -> Prop :=
@@ -29,11 +26,8 @@ Proof.
  repeat constructor. Qed.
 
 Fixpoint occnum (n : nat) (lst : list nat) : nat :=
-<<<<<<< HEAD
   (* кількість входжень числа n в список lst                                  *)
-=======
   (* кількість входжень числа n в список lst                                 *)
->>>>>>> 1e9902568d2228a2e40f35ac4fd50b1cdda8a0ac
   match lst with
   | [] => 0
   | m :: lst' => if Nat.eq_dec n m then S (occnum n lst') else occnum n lst'
@@ -51,8 +45,6 @@ Definition SortSpec :=
   { f : list nat -> list nat  (* функцією, що перетворює список на список     *)
     | (forall lst, same lst (f lst)) /\  (* зберігає склад списку             *)
       (forall lst, sorted (f lst)) }.    (* та утворює відсортований список   *)
-<<<<<<< HEAD
-=======
 
 Fixpoint aux_ins_sort (n : nat) (lst : list nat) : list nat :=
   match lst with
@@ -71,7 +63,35 @@ Lemma occnum_aux_ins_sort : forall n m lst,
   occnum n (aux_ins_sort m lst) = occnum n (m :: lst).
 Admitted.
 
-Lemma aux_ins_sort_inv : 
+Lemma aux_ins_sort_inv :
+  forall n lst, sorted lst -> sorted (aux_ins_sort n lst).
+Proof.
+  intros until lst. revert n.
+  induction lst as [| m lst' IHlst']; intros * H.
+  - constructor.
+  - simpl. destruct (le_gt_dec n m)as [Le | Gt].
+    + now constructor.
+    + assert (H1 : sorted lst'). {
+      inversion_clear H; [ constructor | assumption ]. }
+      pose (IH := IHlst' n H1).
+      destruct lst' as [| k lst''].
+      * constructor.
+        -- pose (H2 := le_n m).
+           assert (H3 : m <= S m). { repeat constructor. }
+           assert (H4 : m <= n). { now apply Nat.le_trans with (S m). }
+           assumption.
+        -- constructor.
+      * simpl in IH |-*.
+        destruct (le_gt_dec n k).
+    simpl. destruct (le_gt_dec n m) as [Le | Gt].
+    + now constructor.
+    + inversion_clear H.
+      * constructor; try constructor.
+        unfold gt in Gt.
+        inversion_clear Gt.
+        -- repeat constructor.
+        -- 
+      * 
 
 Theorem ins_sort_is_sorted : SortSpec.
 Proof.
@@ -88,7 +108,6 @@ Proof.
     destruct lst as [| n lst'].
     + constructor.
     + revert n. induction lst' as [| m lst'' IHlst'']; intro.
-      * constructor. 
+      * constructor.
       * destruct (le_gt_dec n m) as [Le | Gt].
         -- simpl.
->>>>>>> 1e9902568d2228a2e40f35ac4fd50b1cdda8a0ac
