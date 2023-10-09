@@ -1,5 +1,3 @@
-
-
 Print nat.  (* індуктивне визначення відповідає аксиомам
 1. 0 є натуральним числом.
 2. Длі будь-якого натурального числа n, S n є натуральним числом.
@@ -43,21 +41,21 @@ Lemma n_plus_0 : forall n : nat, n + 0 = n.
 Proof.
   induction n as [| n' IHn].
   - trivial.
-  - simpl. rewrite IHn. trivial.
+  - simpl. rewrite IHn. reflexivity.
 Qed.
 
 Lemma n_plus_Sm: forall n m : nat, n + S m = S (n + m).
 Proof.
   induction n as [| n' IHn]; intro.
   - trivial.
-  - simpl. rewrite IHn. trivial.
+  - simpl. rewrite IHn. reflexivity.
 Qed.
 
 Lemma plus_comm : forall n m : nat, n + m = m + n.
 Proof.
   induction n as [| n' IHn]; intro.
   - rewrite n_plus_0. trivial.
-  - simpl. rewrite IHn. rewrite n_plus_Sm. trivial.
+  - simpl. rewrite IHn. rewrite n_plus_Sm. reflexivity.
 Qed.
 
 Lemma plus_assoc : forall n m k : nat, n + m + k = n + (m + k).
@@ -65,7 +63,7 @@ Proof.
   intros.
   induction n as [| n' IHn].
   - trivial.
-  - simpl. rewrite IHn. trivial.
+  - simpl. rewrite IHn. reflexivity.
 Qed.
 
 Lemma O_mult_n : forall n : nat, 0 * n = 0.

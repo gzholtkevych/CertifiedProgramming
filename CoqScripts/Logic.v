@@ -21,10 +21,12 @@ Check Type.
 
 Section SecName.
 Variable T : Type.
-Hypothesis tnd : forall P : Prop, P \/ ~P.
+Hypothesis tnd : forall P : Prop, P \/ ~ P.
 Check T.
+Check tnd.
 End SecName.
 Fail Check T.
+Fail Check tnd.
 
 Locate False.
 Locate True.
@@ -41,7 +43,7 @@ Print Term bool.
 Check bool_ind.
 
 Section bool_and_Prop.
-Variables X : Type.
+Variable X : Type.
 
 Definition P (ch : X -> bool) : X -> Prop :=
   fun x => ch x = true.
@@ -54,7 +56,7 @@ Proof.
   - (* case ch x = true *)
     left. reflexivity.
   - (* case ch x = false *)
-    right. intro. discriminate.
+    right. intro. discriminate H.
 Qed.
 End bool_and_Prop.
 Check P.
@@ -71,8 +73,10 @@ Lemma and_comm : A /\ B <-> B /\ A.
 Proof.
   split; intro.
   - elim H. intros HA HB.
-(*    pose (HBA := conj HB HA). exact HBA.   *)
-    split; assumption.
+    (* pose (HBA := conj HB HA). exact HBA.   *)
+    split.
+    + assumption.
+    + assumption.
   - elim H. intros HB HA.
     split; assumption.
 Qed.
@@ -86,7 +90,11 @@ Print Term and_comm'.
 Lemma and_assoc : (A /\ B) /\ C <-> A /\ (B /\ C).
 Proof.
   split; intro H.
-  - elim H. intros. elim H0. intros. split; [ assumption | split; assumption ].
+  - elim H. intros. elim H0. intros. split.
+    + assumption.
+    + split.
+      * assumption.
+      * assumption.
   - elim H. intros. elim H1. intros; split; [ split; assumption | assumption ].
 Qed.
 
@@ -114,6 +122,10 @@ Variables A B C : Prop.
 Lemma or_comm : A \/ B <-> B \/ A.
 Proof.
   split; intro; elim H; intro;
+(*  - right. assumption.
+  - left. assumption.
+  - right. assumption.
+  - left. assumption. *)
   (right; assumption) || (left; assumption).
 Qed.
 

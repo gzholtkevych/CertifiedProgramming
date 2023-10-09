@@ -22,24 +22,29 @@ Import ListNotations.
 (* Синтаксична модель виразу  =============================================== *)
 (* Припустимо, що вираз будується за допомогою бінарних операцій Plus та Mult.
    Тому визначимо тип "binop" - бінарна операція шляхом перелічення:  
-     binop -> Plus | Mult                                                     *)
+     binop -> PLUS | MULT                                                     *)
 
-Inductive binop := Plus | Mult.
+Fail Print binop.
+Fail Check binop_ind.
+Fail Check binop_rec.
+Fail Check binop_rect.
+
+Inductive binop := PLUS | MULT.
 
 (* Дослідження індуктивного визначення для binop ---------------------------- *)
 (*   Який тип має binop?:      *) Check binop.
 (*   Який визначене binop?:    *) Print binop.
-(*   Який тип має Plus?:       *) Check Plus.
-(*   Який тип має Mult?:       *) Check Mult.
+(*   Який тип має Plus?:       *) Check PLUS.
+(*   Який тип має Mult?:       *) Check MULT.
 (*   Який тип має binop_ind?:  *) Check binop_ind.
 (*   Який тип має binop_rec?:  *) Check binop_rec.
 (*   Який тип має binop_rect?: *) Check binop_rect.
 
 (* Визнначення типу "expr" - вираз у відповідності до граматичних правил:
-     expr -> 'Const' nat | 'Binop' b expr expr                                *)
+     expr -> 'const' nat | 'term' binop expr expr                                *)
 Inductive expr : Set :=
-  | Const : nat -> expr                    (* перше граматичне правило *)
-  | Binop : binop -> expr -> expr -> expr. (* друге граматичне правило *)
+  | const : nat -> expr                    (* перше граматичне правило *)
+  | term : binop -> expr -> expr -> expr.  (* друге граматичне правило *)
 
 (* Долслідження наперед визначеного типу nat -------------------------------- *)
 (*   В якому контекстів визначений nat?: *) Locate nat.
@@ -49,13 +54,18 @@ Inductive expr : Set :=
                                             Check nat_rec.
                                             Check nat_rect.
 
+Example c2 := const 2.
+Example c3 := const 3.
+Example ePLUS_c2_c3 := term PLUS c2 c3.
+Example c4 := const 4.
+Example eMULT_ePLUS_c2_c3_c4 := term MULT ePLUS_c2_c3 c4.
 
 (* Інтерпретація бінарних операцій як натуральнозначних функцій двох
    натуральних аргументів                                                     *)
-Definition binopDenote (b : binop) : nat -> nat -> nat :=
-  match b with
-    Plus => plus |
-    Mult => mult
+Definition binopDenote (bop : binop) : nat -> nat -> nat :=
+  match bop with
+  | PLUS => plus
+  | MULT => mult
   end.
 
 (* Дослідження функцій plus та mult з стандартної бібліотеки ---------------- *)
@@ -69,21 +79,16 @@ Definition binopDenote (b : binop) : nat -> nat -> nat :=
 (* Інтерпретація виразів                                                      *)
 Fixpoint exprDenote (e : expr) : nat :=
   match e with
-    Const n       => n |
-    Binop b e1 e2 => binopDenote b (exprDenote e1) (exprDenote e2)
+  | const n        => n
+  | term bop e1 e2 => binopDenote bop (exprDenote e1) (exprDenote e2)
   end.
 
 (* Як це працює? Приклади виразів та їх інтерпретації ----------------------- *)
-Example c2 := Const 2.
 Eval simpl in exprDenote c2.
-Example c3 := Const 3.
 Eval simpl in exprDenote c3.
-Example ePlus_c2_c3 := Binop Plus c2 c3.
-Eval simpl in exprDenote ePlus_c2_c3.
-Example c4 := Const 4.
+Eval simpl in exprDenote ePLUS_c2_c3.
 Eval simpl in exprDenote c4.
-Example eMult_ePlus_c2_c3_c4 := Binop Mult ePlus_c2_c3 c4.
-Eval simpl in exprDenote eMult_ePlus_c2_c3_c4.
+Eval simpl in exprDenote eMULT_ePLUS_c2_c3_c4.
 
 
 (* Модель простого стекового обчислювача ==================================== *)
@@ -115,30 +120,33 @@ Eval simpl in exprDenote eMult_ePlus_c2_c3_c4.
                                                Check option_rec.
                                                Check option_rect.
 
-Definition stack := list nat.      (* пам'ять обчислювача    *)
-Inductive instr : Set :=           (* інструкції обчислювача *)
-    save : nat -> instr |
-    eval : binop -> instr.
-Definition program := list instr.  (* програма обчислювача   *)
+(* Визначення --------------------------------------------------------------- *)
+Definition stack := list nat.      (* пам'яті обчислювача    *)
+Inductive instr : Set :=           (* інструкцій обчислювача *)
+  | save : nat -> instr
+  | eval : binop -> instr.
+Definition program := list instr.  (* програми обчислювача   *)
 
 (* Інтерпретація інструкцій обчислювача                                       *)
-Definition instrDenote (i : instr) (s : stack) : option stack :=
-  match i with
-    save n => Some (n :: s) |
-    eval b => match s with
-                n :: m :: s' => Some ((binopDenote b n m) :: s') |
-                _            => None
-              end
-  end.
+Definition instrDenote (i : instr) : stack -> option stack :=
+  fun s =>
+    match i with
+    | save n => Some (n :: s)
+    | eval b => match s with
+                | n :: m :: s' => Some ((binopDenote b n m) :: s')
+                | _            => None
+                end
+    end.
 
 (* Виконання програми з певного стану стеку                                   *)
-Fixpoint execute (p : program) (s : stack) : option stack :=
-  match p with
-    nil     => Some s |
-    i :: p' => match instrDenote i s with
-                 None    => None |
-                 Some s' => execute p' s'
-               end
+Fixpoint execute (p : program) : stack -> option stack :=
+  fun s =>
+    match p with
+    | nil     => Some s
+    | i :: p' => match instrDenote i s with
+                 | None    => None
+                 | Some s' => execute p' s'
+                 end
   end.
 
 (* Семантичне значення програми                                               *)
@@ -149,12 +157,12 @@ Definition programDenote (p : program) : option stack := execute p nil.
    обчислювача ============================================================== *)
 Fixpoint compile (e : expr) : program :=
   match e with
-    Const n => [save n]
-  | Binop b e1 e2 => (compile e2) ++ (compile e1) ++ [eval b]
+  | const n => [save n]
+  | term b e1 e2 => (compile e2) ++ (compile e1) ++ [eval b]
   end.
 
 (* Як це працює? Приклад компіляції                                           *)
-Example p := compile eMult_ePlus_c2_c3_c4.
+Example p := compile eMULT_ePLUS_c2_c3_c4.
 Eval compute in p.
 Eval compute in programDenote p.
 
@@ -182,8 +190,8 @@ Theorem correctness : forall e : expr,
 Proof.
   intro.
   induction e.
-  - unfold programDenote. (*simpl. reflexivity*) trivial.
-  -
+  - unfold programDenote. (* simpl. reflexivity. *) trivial.
+  - 
 Abort.
 
 (* Принцип послідовної компіляції ------------------------------------------- *)
@@ -229,3 +237,6 @@ Proof.
     simpl. unfold programDenote.
     repeat rewrite seq_calc. trivial.
 Qed.
+
+Print correctness.
+
