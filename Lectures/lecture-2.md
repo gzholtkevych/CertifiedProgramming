@@ -7,15 +7,15 @@
 Маємо арифметичні вирази, які оперують з натуральними константами за допомогою бінарних операцій додавання і множення.
 
 Абстрактний синтаксис мови арифметичних виразів визначається наступними правилами
+- $\mathtt{binop}$ є або $\mathtt{PLUS}$, або $\mathtt{MULT}$
+- $\mathtt{const}\ n$ є арифметичним виразом, якщо $n$ є натуральним числом
+- $\mathtt{term}\ bop\ e_1\ e_2$ є арифметичним виразом, якщо $bop$ є представником $\mathtt{binop}$, а $e_1$ та $e_2$ є арифметичними виразами
 
-<table width=800px height=150px align="center">
-<tr><td align="center">
-$\mathtt{binop}\textbf{ is either }\mathtt{plus}\textbf{ or }\mathtt{mult}$</td></tr><tr><td align="center">
-$\dfrac{n\textbf{ is a natural number}}{\mathtt{const}\ n\textbf{ is an arithmetic expression}}$</td></tr><tr><td align="center">
-$\dfrac{e_1,e_2\textbf{ are arithmetic expressions and }bop\textbf{ is a binop}}{\mathtt{term}\ bop\ e_1\ e_2\textbf{ is an arithmetic expression}}$</td></tr>
-</table>
+Семантичним значенням арифметичного виразу $e$ будемо вважати натуральне число $\mathtt{denote}\ e$, яке цей вираз представляє.
 
-Семантичним значенням арифметичного виразу будемо вважати натуральне число, яке є результатом обчислення цього виразу.
+Детальніше,
+- $\mathtt{denote}\ e:=n$, якщо $e\equiv\mathtt{const}\ n$
+- $\mathtt{denote}\ e:=\mathtt{denote}\ e_1+\mathtt{denote}\ e_2$, якщо $e\equiv\mathtt{term}\ \mathtt{PLUS}\ e_1\ e_2$, де $e_1$ та $e_2$ є арифметичними виразами
 
 Розглянемо також обчислювач, пам'ять якого представляє собою стек натуральних чисел.
 
@@ -30,15 +30,15 @@ $\dfrac{e_1,e_2\textbf{ are arithmetic expressions and }bop\textbf{ is a binop}}
 
 <details><summary><H2>Необхідні типи даних для представлення арифметичних виразів</H2></summary>
 
-Спроєктуємо та специфікуємо ці типи даних, використовуючи The Coq Proof Assistant.
+Спроєктуємо та специфікуємо yеобхідні типи даних для представлення арифметичних виразів, використовуючи The Coq Proof Assistant.
 
 Першим нашим кроком буде специфікація типу даних `binop`, призначеного для представлення символів бінарних операцій:
 
 ```
-Inductive binop := plus | mult.
+Inductive binop := PLUS | MULT.
 ```
-Це визначення вводить новий тип з іменем `biniop`, в якому живуть лише дві константи `plus` та `mult`.
-Формальною гарантією того, що ніякі інші сутності окрім `plus` та `mult` не живуть в `biniop` представляється такими твердженнями
+Це визначення вводить новий тип з іменем `biniop`, в якому живуть лише дві константи `PLUS` та `MULT`.
+Формальною гарантією того, що ніякі інші сутності окрім `PLUS` та `MULT` не живуть в `biniop` представляється такими твердженнями
 
 ```
 binop_ind  : forall P : binop -> Prop, P Plus -> P Mult -> forall b : binop, P b
@@ -51,18 +51,17 @@ binop_rect : forall P : binop -> Type, P Plus -> P Mult -> forall b : binop, P b
 
 ```
 Inductive expr :=
-  Const : nat -> expr
-| Binop : binop -> expr -> expr -> expr.
+  const : nat -> expr
+| term : binop -> expr -> expr -> expr.
 ```
 
 Приклади дерев, що моделюють арифметичні вирази
 
 ```mermaid
 graph TD;
-  subgraph Const 2
-    A(Const)-->B[2];
+  subgraph const 2
+    A(const)-->B[2];
   end
 ```
-
 
 </details>
