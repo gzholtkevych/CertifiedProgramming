@@ -13,10 +13,12 @@ Print nat.  (* індуктивне визначення відповідає а
  *)
 Lemma inj_nat : forall n m : nat, n = m <-> S n = S m.
 Proof.
-  intros. split; intro.
+  intros. (* unfold "_ <-> _". *) split; intro.
   - rewrite H. reflexivity.
   - injection H. intro. assumption.
 Qed.
+Check inj_nat.
+Print inj_nat.
 
 (* Наступна аксиома гарантується тактикою discriminate
 7. Для будь-якого n, не вірно S n = 0  *)
@@ -30,7 +32,6 @@ Qed.
    що P є тотожньо вірним. *)
 Check nat_ind.
 
-
 Print Nat.add.
 Print Nat.mul.
 
@@ -39,31 +40,31 @@ Proof. trivial. Qed.
 
 Lemma n_plus_0 : forall n : nat, n + 0 = n.
 Proof.
-  induction n as [| n' IHn].
+  induction n as [| n' IHn'].
   - trivial.
-  - simpl. rewrite IHn. reflexivity.
+  - simpl. rewrite IHn'. reflexivity.
 Qed.
 
 Lemma n_plus_Sm: forall n m : nat, n + S m = S (n + m).
 Proof.
-  induction n as [| n' IHn]; intro.
+  induction n as [| n' IHn']; intro.
   - trivial.
-  - simpl. rewrite IHn. reflexivity.
+  - simpl. rewrite IHn'. reflexivity.
 Qed.
 
 Lemma plus_comm : forall n m : nat, n + m = m + n.
 Proof.
-  induction n as [| n' IHn]; intro.
+  induction n as [| n' IHn']; intro.
   - rewrite n_plus_0. trivial.
-  - simpl. rewrite IHn. rewrite n_plus_Sm. reflexivity.
+  - simpl. rewrite IHn'. rewrite n_plus_Sm. reflexivity.
 Qed.
 
-Lemma plus_assoc : forall n m k : nat, n + m + k = n + (m + k).
+Lemma plus_assoc : forall n m k : nat, (n + m) + k = n + (m + k).
 Proof.
   intros.
-  induction n as [| n' IHn].
+  induction n as [| n' IHn'].
   - trivial.
-  - simpl. rewrite IHn. reflexivity.
+  - simpl. rewrite IHn'. reflexivity.
 Qed.
 
 Lemma O_mult_n : forall n : nat, 0 * n = 0.
@@ -93,9 +94,9 @@ n <= m <-> exists k : nat, m = n + k *)
 Lemma n_le_n_plus_m : forall n m : nat, n <= n + m.
 Proof.
   intros *. revert n.
-  induction m as [| m' IHm]; intro.
+  induction m as [| m' IHm']; intro.
   - rewrite n_plus_0. constructor.
-  - rewrite n_plus_Sm. constructor. exact (IHm n).
+  - rewrite n_plus_Sm. constructor. exact (IHm' n).
 Qed.
 
 Lemma le_n_m : forall n m : nat, n <= m <-> exists k, m = n + k.
@@ -104,6 +105,6 @@ Proof.
   - induction H.
     + exists 0. trivial.
     + elim IHle. intros k H1.
-      exists (S k). rewrite n_plus_Sm. rewrite H1. trivial.
+      exists (S k). rewrite n_plus_Sm. rewrite H1. reflexivity.
   - destruct H as [k]. rewrite H. apply n_le_n_plus_m.
 Qed.
