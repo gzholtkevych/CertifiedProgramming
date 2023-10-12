@@ -11,7 +11,7 @@ Inductive sorted : list nat -> Prop :=
       forall n, sorted [n]
   | sortS : (* якщо в голову відсортованого списку додати число меше або рівне
                першому елементу списку, то отримаємо відсортований список     *)
-      forall n m lst, 
+      forall n m lst,
         n <= m -> sorted (m :: lst) -> sorted (n :: m :: lst).
 
 #[export] Hint Constructors sorted : sortHDB.
@@ -52,7 +52,7 @@ Variables (lst1 lst2 lst3 : list nat) (n m : nat).
   Proof. auto with sortHDB. Qed.
 
   Lemma same_transitivity : same lst1 lst2 -> same lst2 lst3 -> same lst1 lst3.
-  Proof. unfold same. intros. rewrite <- H0. exact (H n0). Qed.
+  Proof. unfold same. intros. rewrite H. apply H0. Qed.
   (* тобто відношенням схожесті є еквівалентністю на спиках                   *)
 
   Lemma same_cons : same lst1 lst2 -> same (n :: lst1) (n :: lst2).
@@ -66,7 +66,7 @@ Variables (lst1 lst2 lst3 : list nat) (n m : nat).
      два числа у кожний то отримаємо схожі списки                             *)
   Proof.
     unfold same. intros. simpl. rewrite H.
-    destruct (Nat.eq_dec n0 m); destruct (Nat.eq_dec n0 n); reflexivity.
+    case (Nat.eq_dec n0 m); case (Nat.eq_dec n0 n); reflexivity.
   Qed.
 End SameProperties.
 
@@ -80,6 +80,7 @@ Definition SortCert :=
     | (forall lst, same lst (f lst)) /\  (* зберігає склад списку             *)
       (forall lst, sorted (f lst)) }.    (* та утворює відсортований список   *)
 
+(*                 Алгоритм сортування вставкою                               *)
 Fixpoint aux_ins_sort (n : nat) (lst : list nat) : list nat :=
   (* вставляє число у список перед першим елементом списку, що не менший 
      за це число                                                              *)
@@ -95,7 +96,7 @@ Lemma aux_ins_sort_same : forall n lst, same (aux_ins_sort n lst) (n :: lst).
 (* вставка числа у список в голову і за допомогою функції 'aux_ins_sort'
    дають схожі списки                                                         *)
 Proof.
-  intros. revert n. 
+  intros. revert n.
   induction lst as [| m lst' IHlst'].
   - auto with sortHDB.
   - intros n k. simpl aux_ins_sort.
@@ -119,13 +120,13 @@ Lemma aux_ins_sort_inv :
   (* функція 'aux_ins_sort' зберігає відсортованість списку                   *)
 Proof.
   intros. elim H; simpl; auto with sortHDB.
-  - intro m. destruct (le_gt_dec n m); constructor; 
+  - intro m. case (le_gt_dec n m); constructor;
     assumption || constructor || now apply gt_le.
-  - intros m k lst' H1 H2 H3. 
+  - intros m k lst' H1 H2 H3.
     destruct (le_gt_dec n m); simpl.
-    + repeat constructor; assumption.
-    + destruct (le_gt_dec n k); simpl; constructor; try assumption.
-      now apply gt_le.
+    + auto with sortHDB.
+    + destruct (le_gt_dec n k); auto with sortHDB.
+      constructor; [ now apply gt_le | assumption ].
 Qed.
 
 Fixpoint ins_sort (lst : list nat) : list nat :=
