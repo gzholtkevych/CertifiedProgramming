@@ -46,3 +46,4 @@
 ## Посилання на джерела
 
 1. [Adam Chlipala. Certified Programming with Dependent Types](http://adam.chlipala.net/cpdt/)
+2. [Christine Paulin-Mohring. Introduction to the Coq proof-assistant for practical software verification](https://www.lri.fr/~paulin/LASER/course-notes.pdf)
