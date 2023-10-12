@@ -82,6 +82,8 @@ Definition SortSpec :=
       (forall lst, sorted (f lst)) }.    (* та утворює відсортований список   *)
 
 Fixpoint aux_ins_sort (n : nat) (lst : list nat) : list nat :=
+  (* вставляє число у список перед першим елементом списку, що не менший 
+     за це число                                                              *)
   match lst with
   | [] => [n]
   | m :: lst' => if le_gt_dec n m then n :: m :: lst'
@@ -89,6 +91,8 @@ Fixpoint aux_ins_sort (n : nat) (lst : list nat) : list nat :=
   end.
 
 Lemma aux_ins_sort_same : forall n lst, same (aux_ins_sort n lst) (n :: lst).
+(* вставка числа у список в голову і за допомогою функції 'aux_ins_sort'
+   дають схожі списки                                                         *)
 Proof.
   intros. revert n. 
   induction lst as [| m lst' IHlst'].
@@ -102,14 +106,8 @@ Proof.
       now apply same_cons.
 Qed.
 
-Fixpoint ins_sort (lst : list nat) : list nat :=
-  match lst with
-  | [] => []
-  | n :: lst' => aux_ins_sort n (ins_sort lst')
-  end.
-Eval simpl in ins_sort [5; 4; 3; 2; 1].
-
 Lemma gt_le : forall n m, n > m -> m <= n.
+(* суто допоміжний факт                                                       *)
 Proof.
   unfold "_ > _". intros.
   assert (m <= S m). { repeat constructor. }
@@ -118,6 +116,7 @@ Qed.
 
 Lemma aux_ins_sort_inv :
   forall n lst, sorted lst -> sorted (aux_ins_sort n lst).
+  (* функція 'aux_ins_sort' зберігає відсортованість списку                   *)
 Proof.
   intros. elim H; simpl; auto with sortHDB.
   - intro m. destruct (le_gt_dec n m); constructor; 
@@ -129,7 +128,16 @@ Proof.
       now apply gt_le.
 Qed.
 
+Fixpoint ins_sort (lst : list nat) : list nat :=
+(* функція сортування вставкою                                                *)
+  match lst with
+  | [] => []
+  | n :: lst' => aux_ins_sort n (ins_sort lst')
+  end.
+Eval simpl in ins_sort [5; 4; 3; 2; 1].
+
 Theorem ins_sort_certified : SortSpec.
+(* сертифікована функція сортування вставкою                                  *)
 Proof. 
   exists ins_sort.
   split; intro.
