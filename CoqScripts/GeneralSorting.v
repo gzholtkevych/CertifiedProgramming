@@ -71,7 +71,7 @@ Include C.
         forall x y lst,
           le x y -> sorted (y :: lst) -> sorted (x :: y :: lst).
 
-  Hint Constructors sorted : sortHDB.
+  #[export] Hint Constructors sorted : sortHDB.
 
   Fixpoint occnum (x : X) (lst : list X) : nat :=
     (* кількість входжень 'x' в список lst                                    *)
@@ -84,7 +84,7 @@ Include C.
     (* визначення списків однакових за складом, які будемо називати схожими   *)
     fun lst' lst'' => forall x, occnum x lst' = occnum x lst''.
 
-  Hint Unfold same : sortHDB.
+  #[export] Hint Unfold same : sortHDB.
 
   Section SameProperties.
   Variables (lst1 lst2 lst3 : list X) (x y : X).
@@ -115,7 +115,7 @@ Include C.
     Qed.
   End SameProperties.
 
-  Hint Resolve
+  #[export] Hint Resolve
     same_reflexivity same_symmetry same_transitivity 
     same_cons same_permutation : sortHDB.
 
