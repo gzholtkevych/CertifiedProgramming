@@ -202,4 +202,64 @@ Module InsertionSort (C : Comparable).
 End InsertionSort.
 
 
+Require Import Arith.Compare_dec.
+Require Import Arith.PeanoNat.
+Module Comparable_nat : Comparable.
+  Definition X := nat.
+  Definition cmp : X -> X -> comparison.
+  Proof.
+    intros n m.
+    destruct (lt_eq_lt_dec n m) as [HLe | HGt]; try destruct HLe as [Hlt | Heq].
+    - exact Lt.
+    - exact Eq.
+    - exact Gt.
+  Defined.
 
+  Lemma cmp1 : forall n m, cmp n m = Eq <-> n = m.
+  Proof.
+    intros. split; intro. unfold cmp in H.
+    - destruct (lt_eq_lt_dec n m) as [Hle | Hgt];
+      try destruct Hle as [Hlt | Heq]; discriminate H || assumption.
+    - unfold cmp.
+      destruct (lt_eq_lt_dec n m) as [Hle | Hgt];
+      try destruct Hle as [Hlt | Heq]; try reflexivity;
+      [ rewrite H in Hlt | rewrite H in Hgt ]; exfalso;
+      now apply Nat.lt_irrefl with m.
+  Qed.
+    
+  Lemma cmp2 : forall n m, cmp n m = Lt <-> cmp m n = Gt.
+  Proof.
+    intros. split; unfold cmp; intro;
+    destruct (lt_eq_lt_dec n m) as [Hle | Hgt];
+    try destruct Hle as [Hlt | Heq]; trivial; try discriminate H;
+    try destruct (lt_eq_lt_dec m n) as [Hle' | Hgt'];
+    try destruct Hle' as [Hlt' | Heq']; try discriminate H; try reflexivity.
+    - assert (H1 : n < n). { now apply Nat.lt_trans with m. }
+      exfalso. now apply Nat.lt_irrefl with n.
+    - rewrite Heq' in Hlt. exfalso. now apply Nat.lt_irrefl with n.
+    - rewrite Heq in Hgt'. exfalso. now apply Nat.lt_irrefl with m.
+    - assert (H1 : n < n). { now apply Nat.lt_trans with m. }
+      exfalso. now apply Nat.lt_irrefl with n.
+  Qed.
+
+  Lemma cmp3 : forall n m k, cmp n m = Lt -> cmp m k = Lt -> cmp n k = Lt.
+  Proof.
+    intros *. unfold cmp. intros H1 H2.
+    destruct (lt_eq_lt_dec n k) as [Hle_n_k | Hgt_n_k];
+    try destruct Hle_n_k as [Hlt_n_k | Heq_n_k]; try reflexivity;
+    destruct (lt_eq_lt_dec n m) as [Hle_n_m | Hgt_n_m];
+    try destruct Hle_n_m as [Hlt_n_m | Heq_n_m]; try discriminate H1;
+    destruct (lt_eq_lt_dec m k) as [Hle_m_k | Hgt_m_k];
+    try destruct Hle_m_k as [Hlt_m_k | Heq_m_k]; try discriminate H2;
+    exfalso.
+    - rewrite Heq_n_k in Hlt_n_m.
+      assert (H3 : m < m). { now apply Nat.lt_trans with k. }
+      now apply Nat.lt_irrefl with m.
+    - assert (H3 : k < m). { now apply Nat.lt_trans with n. }
+      assert (H4 : m < m). { now apply Nat.lt_trans with k. }
+      now apply Nat.lt_irrefl with m.
+  Qed. 
+
+End Comparable_nat.
+
+Module InsertionSort_nat := InsertionSort(Comparable_nat).
