@@ -2,50 +2,60 @@ Require Import Lists.List.
 Import ListNotations.
 
 
-Module Type Comparable.
+Module Type CMP.
+
   Parameter X : Set.
   Parameter cmp : X -> X -> comparison.
   
   Axiom cmp1 : forall x y, cmp x y = Eq <-> x = y.
   Axiom cmp2 : forall x y, cmp x y = Lt <-> cmp y x = Gt.
   Axiom cmp3 : forall x y z, cmp x y = Lt -> cmp y z = Lt -> cmp x z = Lt.
-End Comparable.
 
-Module Type TotalStrongOrdered.
+End CMP.
+
+
+Module Type TSO.
+
   Parameter X : Set.
   Parameter lt : X -> X -> Prop.
-  Parameter lt_eq_lt_dec : forall x y, {lt x y} + {x = y} + {lt y x}.
-  
+
   Axiom lt_irrefl : forall x, ~ lt x x.
   Axiom lt_trans : forall x y z, lt x y -> lt y z -> lt x z.
-End TotalStrongOrdered.
 
-Module Comparable_to_TotalStrongOrdered (C : Comparable) <: TotalStrongOrdered.
-Include C.
+  Parameter lt_eq_gt_dec : forall x y, {lt x y} + {x = y} + {lt y x}.
+
+End TSO.
+
+
+Module toTSO (M : CMP) <: TSO with Definition X := M.X.
+(* ------------------------ Setting parameters ------------------------------ *)
+  Definition X := M.X.
+  Definition lt := fun x y => M.cmp x y = Lt.
+
 (* ------------------ Checking Signature Constraints ------------------------ *)
-  Definition lt := fun x y => cmp x y = Lt.
-  Definition lt_eq_lt_dec (x y : X) : {lt x y} + {x = y} + {lt y x}.
-  Proof.
-    destruct (cmp x y) eqn : V.
-    - left. right. apply cmp1. assumption.
-    - left. left. assumption.
-    - right. apply cmp2. assumption.
-  Defined.
-  
   Lemma lt_irrefl : forall x, ~ lt x x.
   Proof.
     intros * H. unfold lt in H.
-    assert (cmp x x = Eq). { apply cmp1. reflexivity. }
+    assert (M.cmp x x = Eq). { apply M.cmp1. reflexivity. }
     rewrite H0 in H. discriminate H.
   Qed.
   Lemma lt_trans : forall x y z, lt x y -> lt y z -> lt x z.
   Proof.
-    unfold lt. exact cmp3.
+    unfold lt. exact M.cmp3.
   Qed.
+
+  Definition lt_eq_gt_dec (x y : X) : {lt x y} + {x = y} + {lt y x}.
+  Proof.
+    destruct (M.cmp x y) eqn : V.
+    - left. right. apply M.cmp1. assumption.
+    - left. left. assumption.
+    - right. apply M.cmp2. assumption.
+  Defined.
+
 (* ----------------- Additional Definitions and Facts ----------------------- *)
   Definition eq_dec (x y : X) : {x = y} + {x <> y}.
   Proof.
-    destruct (lt_eq_lt_dec x y) as [HLe | HGt]; try destruct HLe as [HLt | HEq].
+    destruct (lt_eq_gt_dec x y) as [HLe | HGt]; try destruct HLe as [HLt | HEq].
     - right. intro. rewrite H in HLt. now apply lt_irrefl with y.
     - now left.
     - right. intro. rewrite H in HGt. now apply lt_irrefl with y.
@@ -55,23 +65,47 @@ Include C.
   Definition le_gt_dec (x y : X) : {le x y} + {lt y x}.
   Proof.
     unfold le.
-    destruct (lt_eq_lt_dec x y) as [HLe | HGt]; try destruct HLe as [HLt | HEq].
+    destruct (lt_eq_gt_dec x y) as [HLe | HGt]; try destruct HLe as [HLt | HEq].
     - now repeat left.
     - left. now right.
     - now right.
   Defined.
 
-  Inductive sorted : list X -> Prop :=
+End toTSO.
+
+
+Module Type SORT.
+  Parameter X : Set.
+  Parameter lt : X -> X -> Prop.
+  Parameter lt_eq_gt_dec : forall x y : X, {lt x y} + {x = y} + {lt y x}.
+  Parameter sorted : list X -> Prop.
+  Parameter same : list X -> list X -> Prop.
+End SORT.
+
+
+Module toSORT (M : CMP) <: SORT with Definition X := M.X.
+
+  Definition X := M.X.
+  Module MTSO := toTSO(M).
+
+  Definition lt := MTSO.lt.
+  Definition lt_eq_gt_dec := MTSO.lt_eq_gt_dec.
+  Definition le := MTSO.le.
+  Definition eq_dec := MTSO.eq_dec.
+  Definition le_gt_dec := MTSO.le_gt_dec.
+
+  Inductive sorted' : list X -> Prop :=
     | sort0 : (* порожній список є відсортованим                              *)
-        sorted []
+        sorted' []
     | sort1 : (* будь-який одноелементний список є відсортованим              *)
-        forall x, sorted [x]
+        forall x, sorted' [x]
     | sortS : (* якщо в голову відсортованого списку додати число меше або рівне
                  першому елементу списку, то отримаємо відсортований список   *)
         forall x y lst,
-          le x y -> sorted (y :: lst) -> sorted (x :: y :: lst).
+          le x y -> sorted' (y :: lst) -> sorted' (x :: y :: lst).
+  Definition sorted := sorted'.
 
-  #[export] Hint Constructors sorted : sortHDB.
+  #[global] Hint Resolve sort0 sort1 sortS : sortHDB.
 
   Fixpoint occnum (x : X) (lst : list X) : nat :=
     (* кількість входжень 'x' в список lst                                    *)
@@ -84,7 +118,7 @@ Include C.
     (* визначення списків однакових за складом, які будемо називати схожими   *)
     fun lst' lst'' => forall x, occnum x lst' = occnum x lst''.
 
-  #[export] Hint Unfold same : sortHDB.
+  #[global] Hint Unfold same : sortHDB.
 
   Section SameProperties.
   Variables (lst1 lst2 lst3 : list X) (x y : X).
@@ -115,20 +149,19 @@ Include C.
     Qed.
   End SameProperties.
 
-  #[export] Hint Resolve
+  #[global] Hint Resolve
     same_reflexivity same_symmetry same_transitivity 
     same_cons same_permutation : sortHDB.
 
-  Definition CertifiedSortingAlgorithm :=
-    (* алгоритм сортування є                                                  *)
-    { f : list X -> list X  (* функцією, що перетворює список на список       *)
-      | (forall lst, same lst (f lst)) /\  (* зберігає склад списку           *)
-        (forall lst, sorted (f lst)) }.    (* та утворює відсортований список *)
-End Comparable_to_TotalStrongOrdered.
+  Definition Correctness (f : list X -> list X) : Prop := 
+    forall lst : list X, same lst (f lst) /\ sorted (f lst).
 
-Module InsertionSort (C : Comparable).
-  Module COrd := Comparable_to_TotalStrongOrdered(C).
-  Include COrd.
+End toSORT.
+
+
+Module InsertionSort (M : CMP).
+  Module MSORT := toSORT(M).
+  Import MSORT.
 
   Fixpoint aux_ins_sort (x : X) (lst : list X) : list X :=
     (* вставляє 'x' у список перед першим елементом списку,
@@ -158,14 +191,14 @@ Module InsertionSort (C : Comparable).
     forall x lst, sorted lst -> sorted (aux_ins_sort x lst).
     (* функція 'aux_ins_sort' зберігає відсортованість списку                 *)
   Proof.
-    intros. elim H; simpl; auto with sortHDB.
+    intros. elim H; simpl. auto with sortHDB; try constructor.
     - intro y. case (le_gt_dec x y); constructor;
       assumption || constructor || unfold le. assumption.
     - intros y z lst' H1 H2 H3.
       destruct (le_gt_dec x y); simpl.
-      + auto with sortHDB.
+      + constructor; [ assumption | now constructor ].
       + destruct (le_gt_dec x z); auto with sortHDB.
-        constructor; try assumption. unfold le. now left.
+        constructor; try assumption; compute; now left. now constructor.
   Qed.
 
   Fixpoint ins_sort (lst : list X) : list X :=
@@ -175,11 +208,10 @@ Module InsertionSort (C : Comparable).
     | n :: lst' => aux_ins_sort n (ins_sort lst')
     end.
 
-  Theorem ins_sort_certified : CertifiedSortingAlgorithm.
+  Theorem ins_sort_certified : Correctness ins_sort.
   (* сертифікована функція сортування вставкою                                *)
-  Proof. 
-    exists ins_sort.
-    split; intro.
+  Proof.
+    intro. split.
     - unfold same. intro.
       induction lst as [| y lst' IHlst'].
       + reflexivity.
@@ -196,70 +228,76 @@ Module InsertionSort (C : Comparable).
           rewrite H. simpl. destruct (eq_dec x y). try contradiction.
           reflexivity.
     - induction lst as [| x lst' IHlst'].
-      + auto with sortHDB.
+      + constructor.
       + simpl. now apply aux_ins_sort_inv.
   Qed.
 End InsertionSort.
 
 
+(* ----------------------- Випадок натуральних чисел ------------------------ *)
 Require Import Arith.Compare_dec.
 Require Import Arith.PeanoNat.
-Module Comparable_nat : Comparable.
+Module CMPNat <: CMP.
+
   Definition X := nat.
-  Definition cmp : X -> X -> comparison.
-  Proof.
-    intros n m.
-    destruct (lt_eq_lt_dec n m) as [HLe | HGt]; try destruct HLe as [Hlt | Heq].
-    - exact Lt.
-    - exact Eq.
-    - exact Gt.
-  Defined.
+  Definition cmp (x y : X) : comparison :=
+    match lt_eq_lt_dec x y with
+    | inleft LE => match LE with
+                   | left _  => Lt
+                   | right _ => Eq
+                   end
+    | inright _ => Gt
+    end.
 
-  Lemma cmp1 : forall n m, cmp n m = Eq <-> n = m.
+  Lemma cmp1 : forall x y : X, cmp x y = Eq <-> x = y.
   Proof.
-    intros. split; intro. unfold cmp in H.
-    - destruct (lt_eq_lt_dec n m) as [Hle | Hgt];
-      try destruct Hle as [Hlt | Heq]; discriminate H || assumption.
-    - unfold cmp.
-      destruct (lt_eq_lt_dec n m) as [Hle | Hgt];
-      try destruct Hle as [Hlt | Heq]; try reflexivity;
-      [ rewrite H in Hlt | rewrite H in Hgt ]; exfalso;
-      now apply Nat.lt_irrefl with m.
-  Qed.
-    
-  Lemma cmp2 : forall n m, cmp n m = Lt <-> cmp m n = Gt.
-  Proof.
-    intros. split; unfold cmp; intro;
-    destruct (lt_eq_lt_dec n m) as [Hle | Hgt];
-    try destruct Hle as [Hlt | Heq]; trivial; try discriminate H;
-    try destruct (lt_eq_lt_dec m n) as [Hle' | Hgt'];
-    try destruct Hle' as [Hlt' | Heq']; try discriminate H; try reflexivity.
-    - assert (H1 : n < n). { now apply Nat.lt_trans with m. }
-      exfalso. now apply Nat.lt_irrefl with n.
-    - rewrite Heq' in Hlt. exfalso. now apply Nat.lt_irrefl with n.
-    - rewrite Heq in Hgt'. exfalso. now apply Nat.lt_irrefl with m.
-    - assert (H1 : n < n). { now apply Nat.lt_trans with m. }
-      exfalso. now apply Nat.lt_irrefl with n.
+    intros. unfold cmp.
+    destruct (lt_eq_lt_dec x y) as [HLe | HGt];
+    try destruct HLe as [HLt | HEq]; split; intro;
+    try discriminate H; trivial; [ rewrite H in HLt | rewrite H in HGt ];
+    exfalso; now apply Nat.lt_irrefl with y.
   Qed.
 
-  Lemma cmp3 : forall n m k, cmp n m = Lt -> cmp m k = Lt -> cmp n k = Lt.
+  Lemma cmp2 : forall x y : X, cmp x y = Lt <-> cmp y x = Gt.
   Proof.
-    intros *. unfold cmp. intros H1 H2.
-    destruct (lt_eq_lt_dec n k) as [Hle_n_k | Hgt_n_k];
-    try destruct Hle_n_k as [Hlt_n_k | Heq_n_k]; try reflexivity;
-    destruct (lt_eq_lt_dec n m) as [Hle_n_m | Hgt_n_m];
-    try destruct Hle_n_m as [Hlt_n_m | Heq_n_m]; try discriminate H1;
-    destruct (lt_eq_lt_dec m k) as [Hle_m_k | Hgt_m_k];
-    try destruct Hle_m_k as [Hlt_m_k | Heq_m_k]; try discriminate H2;
-    exfalso.
-    - rewrite Heq_n_k in Hlt_n_m.
-      assert (H3 : m < m). { now apply Nat.lt_trans with k. }
-      now apply Nat.lt_irrefl with m.
-    - assert (H3 : k < m). { now apply Nat.lt_trans with n. }
-      assert (H4 : m < m). { now apply Nat.lt_trans with k. }
-      now apply Nat.lt_irrefl with m.
-  Qed. 
+    intros. unfold cmp.
+    destruct (lt_eq_lt_dec x y) as [HLe | HGt];
+    try destruct HLe as [HLt | HEq];
+    destruct (lt_eq_lt_dec y x) as [HLe | HGt'];
+    try destruct HLe as [HLt' | HEq']; split; intro;
+    try reflexivity; try discriminate H; assert (x < x);
+    try (now apply Nat.lt_trans with y);
+    try (now rewrite HEq' in HLt);
+    try (now rewrite <- HEq in HGt'); exfalso;
+    try (now apply Nat.lt_irrefl with x).
+  Qed.
 
-End Comparable_nat.
+  Lemma cmp3 : forall x y z : X, cmp x y = Lt -> cmp y z = Lt -> cmp x z = Lt.
+  Proof.
+    intros * H1 H2. unfold cmp in H1, H2 |-*.
+    destruct (lt_eq_lt_dec x y) as [HLe | HGt];
+    try destruct HLe as [HLt | HEq];
+    try destruct (lt_eq_lt_dec y z) as [HLe | HGt'];
+    try destruct HLe as [HLt' | HEq']; try discriminate.
+    destruct (lt_eq_lt_dec x z) as [HLe | HGt];
+    try destruct HLe as [HLt'' | HEq''].
+    - reflexivity.
+    - rewrite HEq'' in HLt.
+      assert (y < y). { now apply Nat.lt_trans with z. }
+      exfalso. now apply Nat.lt_irrefl with y.
+    - assert (x < z). { now apply Nat.lt_trans with y. }
+      assert (x < x). { now apply Nat.lt_trans with z. }
+      exfalso. now apply Nat.lt_irrefl with x.
+  Qed.
+End CMPNat.
 
-Module InsertionSort_nat := InsertionSort(Comparable_nat).
+
+Module NatInsertionSort := InsertionSort(CMPNat).
+Import NatInsertionSort.
+
+Eval simpl in ins_sort [5; 4; 3; 2; 1].
+
+
+(* -------------------------- Випадок цілих чисел --------------------------- *)
+(* наведіть відповідний текст, аналогічний випадку натуральних чисел тут      *)
+
