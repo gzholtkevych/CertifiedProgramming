@@ -95,8 +95,8 @@ Module Names (M : NAME) <: NAME with Definition name := M.name.
     | m :: lst' => match (lt_eq_lt_dec (M.id n) (M.id m)) with
         | inleft Hle => 
             match Hle with
-            | left _  => n :: m :: lst'
-            | right _ => m :: lst'
+            | left _  => n :: lst
+            | right _ => lst
             end
         | inright _  => m :: (aux_inject n lst')
         end
@@ -118,7 +118,7 @@ Module Names (M : NAME) <: NAME with Definition name := M.name.
         * intros. {
           simpl. destruct (lt_eq_lt_dec (M.id n) (M.id k)) as [Hle | Hgt'];
           try destruct Hle as [Hlt | Heq].
-          - constructor; [ assumption | constructor ]; try assumption.
+          - constructor; try constructor; try assumption.
             now inversion_clear H.
           - assumption.
           - inversion_clear H.
@@ -143,15 +143,15 @@ Module Names (M : NAME) <: NAME with Definition name := M.name.
     intros.
     destruct (eq_dec n m) as [Heq | HNeq].
     - now left.
-    - destruct ns as (lst, Hinc). simpl in H |-*. right.
-      induction lst.
+    - right. destruct ns as (lst, Hinc). simpl in H |-*.
+      induction lst as [| k lst' IHlst'].
       + simpl in H. destruct H as [H | H]; contradiction.
-      + simpl in H. destruct (lt_eq_lt_dec (M.id n) (M.id a)) as [Hle | Hgt];
+      + simpl in H. destruct (lt_eq_lt_dec (M.id n) (M.id k)) as [Hle | Hgt];
         try destruct Hle as [Hlt | Heq].
-        * simpl in H |-*. now destruct H as [H | H].
-        * destruct H as [H | H]; [now left | now right].
+        * simpl in H |-*. now destruct H.
+        * assumption.
         * simpl in H. destruct H as [H | H];
-          [now left | right]; apply IHlst;
+          [now left | right]; apply IHlst';
           [ inversion_clear Hinc; [try now constructor | assumption]
           | assumption].
   Qed.
@@ -161,12 +161,12 @@ Module Names (M : NAME) <: NAME with Definition name := M.name.
     intros. destruct ns as (lst, Hinc).
     simpl in H |-*. revert n m H.
     induction lst as [| k lst' IHlst']; intros.
-    - now left.
+    - contradiction.
     - simpl. destruct (lt_eq_lt_dec (M.id m) (M.id k)) as [Hle | Hgt];
       try destruct Hle as [Hlt | Heq].
       + now right.
       + assumption.
-      + elim H; intro.
+      + destruct H as [H | H].
         * now left.
         * right. apply IHlst'. 
           inversion_clear Hinc; [constructor | assumption]. assumption.
@@ -188,20 +188,20 @@ Module Names (M : NAME) <: NAME with Definition name := M.name.
         * now left.
         * right. apply IHlst'.
           pose (H2 := inject_discr m n (declare lst') H).
-          elim H2; intro; [contradiction | assumption].
+          destruct H2 as [H2 | H2]; [contradiction | assumption].
     - revert n H. induction lst as [| m lst' IHlst']; intros.
       + contradiction.
-      + elim H; intro H1.
-        * rewrite H1. apply post_inject.
-        * simpl. destruct (eq_dec n m) as [Heq | Hneq];
-          [ rewrite Heq; apply post_inject
-          | apply inject_inv; now apply IHlst' ].
+      + destruct H as [H | H].
+        * rewrite H. apply post_inject.
+        * simpl. { destruct (eq_dec n m) as [Heq | Hneq].
+          - rewrite Heq. apply post_inject.
+          - apply inject_inv. now apply IHlst'. }
   Qed.
 
 End Names.
 
 Inductive var := v : nat → var.
-Module Var <: NAME with Definition name := var.
+Module Var : NAME with Definition name := var.
   Definition name := var.
   Definition id := fun x : name => let '(v n) := x in n.
 
@@ -221,3 +221,5 @@ Module Var <: NAME with Definition name := var.
 End Var.
 
 Module varScopes := Names(Var).
+
+Print varScopes.name.
