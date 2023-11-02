@@ -19,7 +19,7 @@ Module Type STACK.
   Axiom push_pop : forall s x, pop (push x s) = Some s.
   Axiom push_size : forall s x, size (push x s) = S (size s).
   (*
-  Axiom push_eq : 
+  Axiom push_eq :
     forall s' s'' x' x'', push x' s' = push x'' s'' -> x' = x'' /\ s' = s''.
   *)
 
@@ -67,7 +67,6 @@ Module Stack (S : STACK) <: STACK.
   Proof. exact S.push_eq. Qed.
   *)
 
-
   (* --------------------------Additional fields ---------------------------- *)
 
   Definition null_dec : forall s, {s = null} + {s <> null}.
@@ -90,19 +89,18 @@ Module Stack (S : STACK) <: STACK.
       assert (top null = None). { now apply null_top. }
       rewrite H2 in H. discriminate H.
     - pose (H := proj1 (size_indS s n) E).
-      destruct H as (s', H).
-      destruct H as (x, H). intros.
+      destruct H as (s', H). destruct H as (x, H). intros.
       pose (E1 := push_pop s' x). rewrite <- (proj2 H) in E1. rewrite E1 in H1.
       assert (H2 : s' = s'0). { now injection H1. }
       rewrite <- H2.
       pose (E2 := push_top s' x). rewrite <- (proj2 H) in E2. rewrite E2 in H0.
       assert (H3 : x = x0). { now injection H0. }
-      now rewrite <- H3.
+      rewrite <- H3. exact (proj2 H).
   Qed.
 
   Inductive reachable : stack -> Prop :=
     | reach0 : reachable null
-    | reashS : forall s x, reachable s -> reachable (push x s).
+    | reachS : forall s x, reachable s -> reachable (push x s).
 
   Theorem reachability : forall s, reachable s.
   Proof.
@@ -124,6 +122,11 @@ Module Stack (S : STACK) <: STACK.
         pose (H2 := proj2 H1). rewrite H2.
         now constructor.
   Qed.
+  
+  (*
+  Definition stack_eq_dec : 
+    forall s' s'' : stack, {s' = s''} + {s' <> s''}.
+  *)
 End Stack.
 
 
