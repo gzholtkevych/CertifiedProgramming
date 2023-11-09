@@ -60,7 +60,6 @@ Module Stack (S : STACK) <: STACK.
   Lemma size_indS : 
     forall s n, size s = S n <-> exists s' x, size s' = n /\ s = push x s'.
   Proof. exact S.size_indS. Qed.
-
   (*
   Lemma push_eq : 
     forall s' s'' x' x'', push x' s' = push x'' s'' -> x' = x'' /\ s' = s''.
