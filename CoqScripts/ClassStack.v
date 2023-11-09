@@ -81,7 +81,7 @@ Let size := size stack.
     - pose (H := proj1 (store_indS n s) E).
       destruct H as (s', H).
       destruct H as (x, H). intros.
-      pose (E1 := push_pop s' x). 
+      pose (E1 := push_pop s' x).
       rewrite <- (proj2 H) in E1. subst pop. rewrite E1 in H1.
       assert (H2 : s' = s'0). { now injection H1. }
       rewrite <- H2.
@@ -91,6 +91,15 @@ Let size := size stack.
       now rewrite <- H3.
   Qed.
 
+
+  Inductive reachable : store -> Prop :=
+    | reach0 : reachable null
+    | reachS : forall s x, reachable s -> reachable (push x s).
+
+
+  Theorem reachability : forall s, reachable s.
+  Proof.
+  Admitted.
 
 End StackTheory.
 
