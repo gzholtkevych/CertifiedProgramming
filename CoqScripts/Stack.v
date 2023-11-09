@@ -18,10 +18,8 @@ Module Type STACK.
   Axiom push_top : forall s x, top (push x s) = Some x.
   Axiom push_pop : forall s x, pop (push x s) = Some s.
   Axiom push_size : forall s x, size (push x s) = S (size s).
-  (*
   Axiom push_eq : 
     forall s' s'' x' x'', push x' s' = push x'' s'' -> x' = x'' /\ s' = s''.
-  *)
 
   Axiom size_ind0 : forall s, size s = 0 <-> s = null.
   Axiom size_indS : 
@@ -61,12 +59,9 @@ Module Stack (S : STACK) <: STACK.
     forall s n, size s = S n <-> exists s' x, size s' = n /\ s = push x s'.
   Proof. exact S.size_indS. Qed.
 
-  (*
   Lemma push_eq : 
     forall s' s'' x' x'', push x' s' = push x'' s'' -> x' = x'' /\ s' = s''.
   Proof. exact S.push_eq. Qed.
-  *)
-
 
   (* --------------------------Additional fields ---------------------------- *)
 
@@ -123,6 +118,35 @@ Module Stack (S : STACK) <: STACK.
             + assumption. }
         pose (H2 := proj2 H1). rewrite H2.
         now constructor.
+  Qed.
+  
+  Definition stack_eq_dec : forall s' s'' : stack, {s' = s''} + {s' <> s''}.
+  Proof.
+    intros. remember (size s') as n'. remember (size s'') as n''.
+    destruct (Nat.eq_dec n' n'') as [E | NE].
+    - remember n' as n. rewrite <- E in Heqn''. clear Heqn n' E n''.
+      destruct (null_dec s') as [Null | NNull].
+      + left.
+        assert (s'' = null). {
+          assert (size s' = 0). { now apply size_ind0. }
+          rewrite <- Heqn' in H. rewrite H in Heqn''.
+          now apply size_ind0. }
+        now rewrite H.
+      + assert (s'' <> null). {
+          assert (size s' <> 0). { intro.  apply NNull. now apply size_ind0. }
+          rewrite <- Heqn' in H. rewrite Heqn'' in H. intro.
+          apply H. now apply size_ind0. }
+        revert s' s'' Heqn' Heqn'' NNull H.
+        induction n as [| n' IHn']; intros.
+        * right.
+          assert (s'' = null). { now apply size_ind0. }
+          contradiction.
+        * symmetry in Heqn', Heqn''.
+          pose (H1 := proj1 (size_indS s' n') Heqn').
+          pose (H2 := proj1 (size_indS s'' n') Heqn'').
+          destruct H2.
+          
+    - right. intro. apply NE. now rewrite H.
   Qed.
 End Stack.
 
