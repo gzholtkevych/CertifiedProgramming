@@ -10,7 +10,7 @@ Structure Data := declareData {
 
 
 Section StackDefinition.
-Context `{value : Data}.
+Variable value : Data.
 Variables
   (store : Set)
   (null : store)
@@ -33,51 +33,60 @@ Variables
 
 End StackDefinition.
 
+Structure Stack := mkStack {
+  value : Data;
+  store : Set;
+  null : store;
+  push : data value -> store -> store;
+  top : store -> option (data value);
+  pop : store -> option store;
+  size : store -> nat;
+  gStack : aStack value store null push top pop size
+}.
 
 Section StackTheory.
-Context `{value : Data}.
-Variables
-  (store : Set)
-  (null : store)
-  (push : data value -> store -> store)
-  (top : store -> option (data value))
-  (pop : store -> option store)
-  (size : store -> nat).
-Context `{G : aStack value store null push top pop size}.
+Variable value : Data.
+Variable stack : Stack.
+Let store := store stack.
+Let null := null stack.
+Let push := push stack.
+Let top := top stack.
+Let pop := pop stack.
+Let size := size stack.
 
 
   Definition null_dec : forall s, {s = null} + {s <> null}.
   Proof.
-    destruct G as (null_top_G, _, _, _, _, _, _).
+    destruct (gStack stack) as (null_top, _, _, _, _, _, _).
     intro.
     destruct (top s) as [x |] eqn: E.
     - right. intro. rewrite H in E.
-      assert (top null = None). { now apply null_top_G. }
+      assert (top null = None). { now apply null_top. }
       rewrite H0 in E. discriminate E.
-    - left. now apply null_top_G.
+    - left. now apply null_top.
   Defined.
 
 
   Lemma top_pop_push : 
     forall s x s', top s = Some x -> pop s = Some s' -> s = push x s'.
   Proof.
-    destruct G as (
-      null_top_G, _, push_top_G, push_pop_G, _, store_ind0_G, store_indS_G).
+    destruct (gStack stack) as (
+      null_top, _, push_top, push_pop, _, store_ind0, store_indS).
     intro.
     destruct (size s) eqn: E.
-    - intros. assert (s = null). { now apply store_ind0_G. }
+    - intros. assert (s = null). { now apply store_ind0. }
       rewrite H1 in H.
-      assert (top null = None). { now apply null_top_G. }
+      assert (top null = None). { now apply null_top. }
       rewrite H2 in H. discriminate H.
-    - pose (H := proj1 (store_indS_G n s) E).
+    - pose (H := proj1 (store_indS n s) E).
       destruct H as (s', H).
       destruct H as (x, H). intros.
-      pose (E1 := push_pop_G s' x). 
-      rewrite <- (proj2 H) in E1. rewrite E1 in H1.
+      pose (E1 := push_pop s' x). 
+      rewrite <- (proj2 H) in E1. subst pop. rewrite E1 in H1.
       assert (H2 : s' = s'0). { now injection H1. }
       rewrite <- H2.
-      pose (E2 := push_top_G s' x).
-      rewrite <- (proj2 H) in E2. rewrite E2 in H0.
+      pose (E2 := push_top s' x).
+      rewrite <- (proj2 H) in E2. subst top. rewrite E2 in H0.
       assert (H3 : x = x0). { now injection H0. }
       now rewrite <- H3.
   Qed.

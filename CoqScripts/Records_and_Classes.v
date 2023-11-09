@@ -1,3 +1,5 @@
+Require Import Arith.PeanoNat.
+
 (*
 Inductive Pnt : Set :=
   pnt : nat -> nat -> Pnt.
@@ -16,7 +18,7 @@ Record Point : Set := pnt {
   yc : nat
 }.
 
-Definition origin := {| xc := 0; yc := 0 |}.
+Definition origin : Point := {| xc := 0; yc := 0 |}.
 Eval compute in xc origin.
 Eval compute in yc origin.
 
@@ -26,20 +28,45 @@ Class aMonoid (X : Set) (comp : X -> X-> X) (e : X) := {
   right_unit : forall x, comp x e = x
 }.
 
-Section MonoidTheory.
-Variables (X : Set) (comp : X -> X-> X) (e : X).
-Context `{G : aMonoid X comp e}.
+Structure Monoid := mkMonoid {
+  X : Set;
+  comp : X -> X -> X;
+  e : X;
+  gMonoid : aMonoid X comp e
+}.
 
+Instance nat_plus_monoid_instance : aMonoid nat plus 0.
+Proof.
+  constructor.
+  - symmetry. apply Nat.add_assoc.
+  - trivial.
+  - symmetry. apply plus_n_O.
+Defined.
+
+Definition nat_plus_monoid := {|
+  X := nat; comp := plus; e := 0; gMonoid := nat_plus_monoid_instance |}.
+
+Section MonoidTheory.
+Variable m : Monoid.
+(*
+  Let X := X m.
+  Let comp := comp m.
+  Let e := e m.
+*)
   Lemma unit_unieq : 
-    forall u : X,
-      (forall x : X, comp u x = x) ->
-      (forall x : X, comp x u = x) ->
-        u = e.
+    forall u : X m,
+      (forall x : X m, (comp m) u x = x) ->
+      (forall x : X m, (comp m) x u = x) ->
+        u = e m.
   Proof.
     intros.
-    pose (Hue := H e). pose (Heu := H0 e).
-    destruct G.
-    pose(H1ue := right_unit0 u).
+    pose (Hue := H (e m)). pose (Heu := H0 (e m)).
+    destruct (gMonoid m).
+    pose(H1ue := right_unit0).
     now rewrite H1ue in Hue.
   Qed.
 End MonoidTheory.
+Check unit_unieq.
+
+Example O_unique := unit_unieq nat_plus_monoid.
+Check O_unique.
