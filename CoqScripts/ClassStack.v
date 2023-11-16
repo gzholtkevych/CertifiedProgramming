@@ -4,7 +4,7 @@ Require Import Arith.PeanoNat.
 Module STACK.
 
 Structure Data := declareData {
-  data : Set;
+  data :> Set;
   data_eqDec : forall x y : data, {x = y} + {x <> y}
 }.
 
@@ -104,5 +104,4 @@ Let size := size stack.
 End StackTheory.
 
 End STACK.
-
 
