@@ -99,8 +99,26 @@ Let size := size stack.
 
   Theorem reachability : forall s, reachable s.
   Proof.
-  Admitted.
-
+    destruct (gStack stack) as (
+      null_top, _, push_top, push_pop, _, store_ind0, store_indS).
+    intro. remember (size s).
+      destruct (null_dec s) as [E | NE].
+      - rewrite E. constructor.
+      - revert s Heqn NE. induction n as [| n' IHn']; intros.
+        + assert (s = null). { now apply store_ind0. }
+          contradiction.
+        + symmetry in Heqn.
+          pose (H1 := proj1 (store_indS n' s) Heqn).
+          destruct H1 as (s', H1). destruct H1 as (x, H1).
+          assert(reachable s'). {
+            destruct (null_dec s') as [Nulls' | NotNulls'].
+            - rewrite Nulls'. constructor.
+            - apply IHn'.
+              + symmetry. exact (proj1 H1).
+              + assumption. }
+          pose (H2 := proj2 H1). rewrite H2.
+          now constructor.
+  Qed.
 End StackTheory.
 
 End STACK.
