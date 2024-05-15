@@ -147,7 +147,7 @@ Print Term or_assoc.
 Section PLaxioms.
 Variables A B C : Prop.
 
-Lemma ax1 : A -> B -> A.
+Lemma ax1 (*16*) : A -> B -> A.
 Admitted.
 
 Lemma ax2 : (A -> B) -> (A -> B -> C) -> A -> C.
@@ -158,10 +158,10 @@ Proof.
   - pose (H := H1 H3). assumption.
 Qed.
 
-Lemma ax3 : A /\ B -> A.
+Lemma ax3 (*16*) : A /\ B -> A.
 Admitted.
 
-Lemma ax4 : A /\ B -> B.
+Lemma ax4 (*16*) : A /\ B -> B.
 Admitted.
 
 Lemma ax5 : (A -> B) -> (A -> C) -> A -> (B /\ C).
@@ -171,13 +171,13 @@ Proof.
   - apply H2. assumption.
 Qed.
 
-Lemma ax6 : A -> A \/ B.
+   Lemma ax6 (*16*) : A -> A \/ B.
 Admitted.
 
-Lemma ax7 : B -> A \/ B.
+Lemma ax7 (*16*) : B -> A \/ B.
 Admitted.
 
-Lemma ax8 : (A -> C) -> (B -> C) -> (A \/ B) -> C.
+   Lemma ax8 : (A -> C) -> (B -> C) -> (A \/ B) -> C.
 Proof.
   intros H1 H2 H3.
   elim H3; intro H.
@@ -185,7 +185,7 @@ Proof.
   - apply H2. assumption.
 Qed.
 
-Lemma ax9 : (A -> ~ B) -> B -> ~ A.
+Lemma ax9 (*20*) : (A -> ~ B) -> B -> ~ A.
 Admitted.
 
 End PLaxioms.
