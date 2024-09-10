@@ -48,4 +48,4 @@
 1. [Adam Chlipala. Certified Programming with Dependent Types](http://adam.chlipala.net/cpdt/)
 2. [Christine Paulin-Mohring. Introduction to the Coq proof-assistant for practical software verification](https://www.lri.fr/~paulin/LASER/course-notes.pdf)
 3. [Yves Bertot, Pierre Castéran. Interactive Theorem Proving and Program Development: Coq’Art: The Calculus of Inductive Constructions](https://books.google.com.ua/books/about/Interactive_Theorem_Proving_and_Program.html?id=m5w5PRj5Nj4C&redir_esc=y)
-4. [Software Foundations (this series is a broad introduction to the mathematical underpinnings of reliable software)](https://softwarefoundations.cis.upenn.edu/current/index.html)
+4. [Software Foundations (серія робіт, які є вступом до математичних основ надійного програмного забезпечення)](https://softwarefoundations.cis.upenn.edu/current/index.html)
