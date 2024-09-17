@@ -146,11 +146,10 @@ graph TD
 
 ```mermaid
 graph TD
-    A( ) ---> M
     subgraph M
-        C[ ] ---> M1[M]
+        C[ ] ---> M1[N]
         C ---> y
-        C ---> M2[M]
+        C ---> M2[N]
     end
 ```
 
