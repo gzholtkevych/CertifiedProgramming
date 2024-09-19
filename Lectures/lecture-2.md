@@ -268,7 +268,7 @@ $((\uplambda\ x\mathop{.}(\uplambda\ y\mathop{.}y))\Omega_{3,4})$ і т.д.<br/>
 &\dfrac{\Gamma\vdash M:\alpha}{\Gamma,\Delta\vdash M:\alpha } &\text{- правило послаблення. Tут }\Delta\text{ є контекстом, що не суперечить }\Gamma \\
 &x:\alpha\vdash x:\alpha &\text{- правило тавтології} \\
 &\dfrac{\Gamma\vdash M:\alpha\rightarrow\beta\quad\Gamma\vdash N:\alpha}{\Gamma\vdash(M N):\beta} &\text{- правило застосування} \\
-&\dfrac{\Gamma,x:\alpha\vdash M:\beta}{\Gamma\vdash(\lambda\ x\mathop{.}M:\alpha\rightarrow\beta} &\text{- правило абстракції}
+&\dfrac{\Gamma,x:\alpha\vdash M:\beta}{\Gamma\vdash(\uplambda\ x\mathop{.}M:\alpha\rightarrow\beta} &\text{- правило абстракції}
 \end{eqnarray}
 ```
 
@@ -283,7 +283,12 @@ def id(x: int) -> int:
 ```
 
 моделюється комбінатором $\mathbf{I}=\uplambda\ x\mathop{.}x$, для якого $\vdash\mathbf{I}:\mathtt{int}\rightarrow\mathtt{int}$.</br>
-Зауважте, що в цьому прикладі контекст відсутній.
+Дійсно,
+
+- судження $x:\mathtt{int}\vdash x:\mathtt{int}$ є коректним (правило тавтології)
+- судження $(\uplambda\ x\mathop{.}x):\mathtt{int}\rightarrow\mathtt{int}$ є результатом застосування правила абстракції до попереднього судження
+
+Зауважте, що в цьому прикладі судження $\vdash\mathbf{I}:\mathtt{int}\rightarrow\mathtt{int}$ не має контексту.
 
 ### Властивості простої типізації
 
