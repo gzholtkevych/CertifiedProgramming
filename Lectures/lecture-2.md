@@ -290,6 +290,19 @@ def id(x: int) -> int:
 
 Зауважте, що в цьому прикладі судження $\vdash\mathbf{I}:\mathtt{int}\rightarrow\mathtt{int}$ не має контексту.
 
+**Приклад.**
+
+Терм $(\uplambda\ x\mathop{.}(x x))$ не можна типізувати.
+
+Розглянемо функцію $\mathrm{ord}$, що визначена на типах у наступний спосіб
+
+```math
+\begin{align}
+\mathrm{ord}(\alpha)&=0\quad\text{ якщо }\alpha\text{ є атомарним типом} \\
+\mathrm{ord}(\alpha\rightarrow\beta)&=\max(\mathrm{ord}(\alpha)+1,\mathrm{ord}(\beta))
+\end{align}
+```
+
 ### Властивості простої типізації
 
 
