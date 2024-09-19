@@ -286,7 +286,7 @@ def id(x: int) -> int:
 Дійсно,
 
 - судження $x:\mathtt{int}\vdash x:\mathtt{int}$ є коректним (правило тавтології)
-- судження $(\uplambda\ x\mathop{.}x):\mathtt{int}\rightarrow\mathtt{int}$ є результатом застосування правила абстракції до попереднього судження
+- судження $\vdash(\uplambda\ x\mathop{.}x):\mathtt{int}\rightarrow\mathtt{int}$ є результатом застосування правила абстракції до попереднього судження
 
 Зауважте, що в цьому прикладі судження $\vdash\mathbf{I}:\mathtt{int}\rightarrow\mathtt{int}$ не має контексту.
 
