@@ -236,9 +236,9 @@ $((\uplambda\ x\mathop{.}(\uplambda\ y\mathop{.}y))\Omega_{3,4})$ і т.д.<br/>
 
 ```math
 \begin{eqnarray}
-&\dfrac{A\text{ є елементом }\symbf{T}_0}{A\text{ є елементом }\symbf{T}} &\text{- правило побудови атомарного типу} \\
-&\dfrac{\alpha\text{ є елементом }\symbf{T}\quad\beta\text{ є елементом }\symbf{T}}
- {\left(\alpha\rightarrow\beta\right)\text{ є елементом }\symbf{T}} &\text{- правило побудови функціонального типу}
+&\dfrac{A\in\symbf{T}_0}{A\in\symbf{T}} &\text{- правило побудови атомарного типу} \\
+&\dfrac{\alpha\in\symbf{T}\quad\beta\in\symbf{T}}
+ {\left(\alpha\rightarrow\beta\right)\in\symbf{T}} &\text{- правило побудови функціонального типу}
 \end{eqnarray}
 ```
 
@@ -259,6 +259,18 @@ $((\uplambda\ x\mathop{.}(\uplambda\ y\mathop{.}y))\Omega_{3,4})$ і т.д.<br/>
 
 ***Судженням типізації*** є вираз виду $\Gamma\vdash M:\alpha$, де $\Gamma$ є контекстом, $M$ - термом, а $\alpha$ - типом.
 Цей вирах читається як "в контексті $\Gamma$ терм $M$ є мешканцем типу (має тип) $\alpha$".
+
+**Правила типізації**
+призначенні для отримання суджень типізації є наступними:
+
+```math
+\begin{eqnarray}
+&\dfrac{\Gamma\vdash M:\alpha}{\Gamma,\Delta\vdash M:\alpha } &\text{- правило послаблення. Tут }\Delta\text{ є контекстом, що не суперечить }\Gamma \\
+&x:\alpha\vdash x:\alpha &\text{- правило тавтології} \\
+&\dfrac{\Gamma\vdash M:\alpha\rightarrow\beta\quad\Gamma\vdash N:\alpha}{\Gamma\vdash(M N):\beta} &\text{- правило застосування} \\
+&\dfrac{\Gamma,x:\alpha\vdash M:\beta}{\Gamma\vdash(\lambda\ x\mathop{.}M:\alpha\rightarrow\beta} &\text{- правило абстракції}
+\end{eqnarray}
+```
 
 **Приклад.**
 
