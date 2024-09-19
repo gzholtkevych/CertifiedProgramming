@@ -282,7 +282,7 @@ def id(x: int) -> int:
     return x
 ```
 
-моделюється комбінатором $\mathbf{I}=\uplambda\ x\mathop{.}x$, для якого $\vdash\mathbf{I}:\mathtt{int}$.</br>
+моделюється комбінатором $\mathbf{I}=\uplambda\ x\mathop{.}x$, для якого $\vdash\mathbf{I}:\mathtt{int}\rightarrow\mathtt{int}$.</br>
 Зауважте, що в цьому прикладі контекст відсутній.
 
 ### Властивості простої типізації
