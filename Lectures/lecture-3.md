@@ -93,6 +93,8 @@ Definition binopDenote (bop : binop) : nat -> nat -> nat :=
   end.
 ```
 
+Це визначення інтерпретує `binopDenote PLUS` як стандартну функцію `plus` з бібліотеки `Coq.Init.Peano`, а `binopDenote MULT` як стандартну
+функцію `mult` з тієї ж бібліотеки.
 
 
 # Стековий обчислювач
