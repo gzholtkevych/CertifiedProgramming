@@ -99,6 +99,19 @@ Definition binopDenote (bop : binop) : nat -> nat -> nat :=
 Зазначимо, що імена `plus` та `mult` є аліасами імен `Nat.add` та `Nat.mul` відповідно, які показують, що визначення функцій знаходяться в
 модулі `Nat`, в якому зібрана більшість визначень, пов'язаних з типом `nat`.
 
+Тепер дамо визначення семантичного значення виразів:
+
+```coq
+Fixpoint exprDenote (e : expr) : nat :=
+  match e with
+    const n        => n
+  | term bop e1 e2 => binopDenote bop (exprDenote e1) (exprDenote e2)
+  end.
+```
+
+Команда `Fixpoint` на відміну від команди `Definition` означає, що визначення є рекурсивним - у четвертому рядку визначення використовується
+посилання `exprDenote`, значення якого визначається. 
+
 
 # Стековий обчислювач
 
