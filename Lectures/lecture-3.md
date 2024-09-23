@@ -83,6 +83,35 @@ Example c4 := const 4.
 Example eMULT_ePLUS_c2_c3_c4 := term MULT ePLUS_c2_c3 c4.
 ```
 
+
+```mermaid
+---
+title: term MULT ePLUS_c2_c3 c4
+---
+graph TB
+  subgraph c4[const 4]
+  direction TB
+    G(const) --> H[4: nat]
+  end
+  subgraph t1[term PLUS c2 c3]
+    direction TB
+    subgraph c3[const 3]
+    direction TB
+      C(const) --> D[3: nat]
+    end
+    subgraph c2[const 2]
+    direction TB
+      A(const) -->B[2: nat];
+    end
+    E(term) --> F[PLUS]
+    E --> c2
+    E --> c3
+  end
+  J(term) --> K[MULT]
+  J --> t1
+  J --> c4    
+```
+
 Побудову семантики арифметичних виразів почнемо з інтерпретації бінарних операцій як натуральнозначних функцій двох натуральних аргументів:
 
 ```coq
@@ -112,6 +141,57 @@ Fixpoint exprDenote (e : expr) : nat :=
 Команда `Fixpoint` на відміну від команди `Definition` означає, що визначення є рекурсивним - у четвертому рядку визначення використовується
 посилання `exprDenote`, значення якого визначається. 
 
+Подивимося як це працює.
+
+Вводимо:
+
+```coq
+Eval simpl in exprDenote c2.
+```
+
+Отримуємо:
+
+```coq
+= 2 : nat
+```
+
+Вводимо:
+
+```coq
+Eval simpl in exprDenote c3.
+```
+
+Отримуємо:
+
+```coq
+= 3 : nat
+```
+
+Вводимо:
+
+```coq
+Eval simpl in exprDenote ePLUS_c2_c3.
+```
+
+Отримуємо:
+
+```coq
+= 5 : nat
+```
+
+Вводимо:
+
+```coq
+Eval simpl in exprDenote eMULT_ePLUS_c2_c3_c4.
+```
+
+Отримуємо:
+
+```coq
+= 20 : nat
+```
+
+
 
 # Стековий обчислювач
 
@@ -130,12 +210,5 @@ Fixpoint exprDenote (e : expr) : nat :=
 
 
 Приклади дерев, що моделюють арифметичні вирази
-
-```mermaid
-graph TD;
-  subgraph const 2
-    A(const)-->B[2];
-  end
-```
 
 </details>
