@@ -58,6 +58,21 @@ Inductive expr :=
 | term : binop -> expr -> expr -> expr.
 ```
 
+У цьому визначенні використовується тип `nat`, який визначений у стандартній бібліотеці `Coq.Init.Datatypes`, яка завантажується автоматично при запуску `coqide`.
+Визначення `nat` у цій бібліотеці є таким
+
+```coq
+Inductive nat : Set :=  O : nat | S : nat -> nat.
+```
+
+Вілповідні гарантії відсутності зайвих мешканців у типі `nat` є в точності варіантами принципу математичної індукції:
+
+```coq
+nat_ind : forall P : nat -> Prop, P 0 -> (forall n : nat, P n -> P (S n)) -> forall n : nat, P n
+nat_rec : forall P : nat -> Set, P 0 -> (forall n : nat, P n -> P (S n)) -> forall n : nat, P n
+nat_rect : forall P : nat -> Type, P 0 -> (forall n : nat, P n -> P (S n)) -> forall n : nat, P n
+```
+
 
 
 
