@@ -83,6 +83,15 @@ Example c4 := const 4.
 Example eMULT_ePLUS_c2_c3_c4 := term MULT ePLUS_c2_c3 c4.
 ```
 
+Побудову семантики арифметичних виразів почнемо з інтерпретації бінарних операцій як натуральнозначних функцій двох натуральних аргументів:
+
+```coq
+Definition binopDenote (bop : binop) : nat -> nat -> nat :=
+  match bop with
+    PLUS => plus
+  | MULT => mult
+  end.
+```
 
 
 
