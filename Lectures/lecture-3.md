@@ -73,6 +73,15 @@ nat_rec : forall P : nat -> Set, P 0 -> (forall n : nat, P n -> P (S n)) -> fora
 nat_rect : forall P : nat -> Type, P 0 -> (forall n : nat, P n -> P (S n)) -> forall n : nat, P n
 ```
 
+Наведемо тепер приклади побудови арифметичних виразів:
+
+```coq
+Example c2 := const 2.
+Example c3 := const 3.
+Example ePLUS_c2_c3 := term PLUS c2 c3.
+Example c4 := const 4.
+Example eMULT_ePLUS_c2_c3_c4 := term MULT ePLUS_c2_c3 c4.
+```
 
 
 
