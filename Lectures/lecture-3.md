@@ -253,7 +253,9 @@ Definition instrDenote (i : instr) : stack -> option stack :=
     end.
 ```
 
-(* Виконання програми з певного стану стеку                                   *)
+Результат виконання програми з певного стану стеку
+
+```coq
 Fixpoint execute (p : program) : stack -> option stack :=
   fun s =>
     match p with
@@ -263,10 +265,13 @@ Fixpoint execute (p : program) : stack -> option stack :=
                  | Some s' => execute p' s'
                  end
   end.
+```
 
-(* Семантичне значення програми                                               *)
+Семантичне значення програми є результатом її виконання з порожнього стану стеку.
+
+```coq
 Definition programDenote (p : program) : option stack := execute p nil.
-
+```
 
 # Задача трансляції
 
