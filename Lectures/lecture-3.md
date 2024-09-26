@@ -415,4 +415,53 @@ ______________________________________(2/2)
 Some [exprDenote (term b e1 e2)] = programDenote (compile (term b e1 e2))
 ```
 
-Як бачимо утворилося дві гілки у доведенні - по одній для кожного конструктора типа `expr`.
+Як бачимо утворилося дві цілі доведення - по одній для кожного конструктора типа `expr`.<br/>
+Перша з цих цілей легко реалізується за рахунок застосування спочатку тактики `unfold`, яка заміняє терм
+його визначенням, а потім прямого обчислення терму.
+
+```coq
+  unfold programDenote.
+```
+Це дає таку зміну для першої цілі
+
+```coq
+2 subgoals
+n : nat
+______________________________________(1/2)
+Some [exprDenote (const n)] = execute (compile (const n)) []
+______________________________________(2/2)
+Some [exprDenote (term b e1 e2)] = programDenote (compile (term b e1 e2))
+```
+
+```coq
+  simpl.
+```
+
+дає
+
+```coq
+2 subgoals
+n : nat
+______________________________________(1/2)
+Some [n] = Some [n]
+______________________________________(2/2)
+Some [exprDenote (term b e1 e2)] = programDenote (compile (term b e1 e2))
+```
+
+Як ми бачимо, перша ціль є вірною рівністю, тому ми можемо завершити її доведення тактикою `reflexivity`.
+
+```coq
+  reflexivity.
+```
+
+дає
+
+```coq
+1 subgoal
+b : binop
+e1, e2 : expr
+IHe1 : Some [exprDenote e1] = programDenote (compile e1)
+IHe2 : Some [exprDenote e2] = programDenote (compile e2)
+______________________________________(1/1)
+Some [exprDenote (term b e1 e2)] = programDenote (compile (term b e1 e2))
+```
