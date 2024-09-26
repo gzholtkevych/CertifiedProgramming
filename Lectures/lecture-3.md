@@ -420,7 +420,8 @@ Some [exprDenote (term b e1 e2)] = programDenote (compile (term b e1 e2))
 його визначенням, а потім прямого обчислення терму.
 
 ```coq
-  unfold programDenote.
+  (* конструктор const *)
+    unfold programDenote.
 ```
 Це дає таку зміну для першої цілі
 
@@ -434,7 +435,7 @@ Some [exprDenote (term b e1 e2)] = programDenote (compile (term b e1 e2))
 ```
 
 ```coq
-  simpl.
+    simpl.
 ```
 
 дає
@@ -451,7 +452,7 @@ Some [exprDenote (term b e1 e2)] = programDenote (compile (term b e1 e2))
 Як ми бачимо, перша ціль є вірною рівністю, тому ми можемо завершити її доведення тактикою `reflexivity`.
 
 ```coq
-  reflexivity.
+    reflexivity.
 ```
 
 дає
