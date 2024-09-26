@@ -289,10 +289,12 @@ Theorem correctness : forall e : expr,
 
 Таким чином, задача ***сертифікованого програмування*** у цьому випадку полягає у
 - розробці програми, що реалізує функцію `compile`;
-- доведенні коректності цієї програми, тобто у побудові терма `correctness`, який має тип
+- доведенні коректності цієї програми, тобто у побудові терма `correctness`, який має тип<br/>
 ```coq
 forall e : expr, Some [exprDenote e] = programDenote (compile e). 
 ```
+
+## Функція `compile`
 
 ```coq
 Fixpoint compile (e : expr) : program :=
