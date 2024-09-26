@@ -328,7 +328,7 @@ app_assoc_reverse
 
 Це нам далі знадобиться.
 
-Тепер давайте визначимо `compile` у такий спосіб 
+Тепер давайте визначимо `compile` у такий спосіб
 
 ```coq
 Fixpoint compile (e : expr) : program :=
@@ -429,6 +429,7 @@ Some [exprDenote (term b e1 e2)] = programDenote (compile (term b e1 e2))
   (* конструктор const *)
     unfold programDenote.
 ```
+
 Це дає таку зміну для першої цілі
 
 ```coq
@@ -474,3 +475,4 @@ Some [exprDenote (term b e1 e2)] = programDenote (compile (term b e1 e2))
 ```
 
 Ми бачимо, що перша ціль зникла, а у контексті з'явилися припущення, які є вірними для доведення другої цілі.
+
