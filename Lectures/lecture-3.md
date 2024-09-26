@@ -314,7 +314,15 @@ app = fun A : Type =>
 Infix "++" := app (right associativity, at level 60) : list_scope.
 ```
 
-Давайте визначимо `compile` у такий спосіб 
+Ця операція є асоциативною
+
+```coq
+app_assoc_reverse
+     : forall (A : Type) (l m n : list A), (l ++ m) ++ n = l ++ m ++ n
+```
+Це нам далі знадобиться.
+
+Тепер давайте визначимо `compile` у такий спосіб 
 
 ```coq
 Fixpoint compile (e : expr) : program :=
@@ -349,4 +357,13 @@ Eval compute in p.
 Eval compute in programDenote p.
 = Some [20]
      : option stack
+```
+
+## Створення сертифікату для функції `compile`
+
+Як вже було зазначено для створення сертифікату необхідно довести таку теорему
+
+```coq
+Theorem correctness : forall e : expr,
+  Some [exprDenote e] = programDenote (compile e).
 ```
