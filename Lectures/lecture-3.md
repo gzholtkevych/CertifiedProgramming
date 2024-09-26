@@ -465,3 +465,5 @@ IHe2 : Some [exprDenote e2] = programDenote (compile e2)
 ______________________________________(1/1)
 Some [exprDenote (term b e1 e2)] = programDenote (compile (term b e1 e2))
 ```
+
+Ми бачимо, що перша ціль зникла, а у контексті з'явилися припущення, які є вірними для доведення другої цілі.
