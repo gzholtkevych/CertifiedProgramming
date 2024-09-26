@@ -403,3 +403,16 @@ Some [exprDenote e] = programDenote (compile e)
 ```coq
   induction e.
 ```
+
+Застовування тактики `induction` дає новий стан доведення
+
+```coq
+2 subgoals
+n : nat
+______________________________________(1/2)
+Some [exprDenote (const n)] = programDenote (compile (const n))
+______________________________________(2/2)
+Some [exprDenote (term b e1 e2)] = programDenote (compile (term b e1 e2))
+```
+
+Як бачимо утворилося дві гілки у доведенні - по одній для кожного конструктора типа `expr`.
