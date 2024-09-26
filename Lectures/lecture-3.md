@@ -341,5 +341,12 @@ Example p := compile eMULT_ePLUS_c2_c3_c4.
 Eval compute in p.
 = [save 4; save 3; save 2; eval PLUS; eval MULT]
      : program
-``` 
+```
+
+Ця програма в результаті виконання дає
+
+```coq
 Eval compute in programDenote p.
+= Some [20]
+     : option stack
+```
