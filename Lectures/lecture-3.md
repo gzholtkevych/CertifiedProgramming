@@ -284,10 +284,20 @@ Theorem correctness : forall e : expr,
   Some [exprDenote e] = programDenote (compile e).
 ```
 
-Таким чином, задача сертифікованого 
+Ця теорема вимагвє, щоб програма, створена функцією `compile` для будь-якого виразу, на порожньому стеку завершувалася б без
+помилки і стек після її виконання містив би всього одне значення, а саме значення виразу, що компілювався.
 
+Таким чином, задача ***сертифікованого програмування*** у цьому випадку полягає у
+- розробці програми, що реалізує функцію `compile`;
+- доведенні коректності цієї програми, тобто у побудові терма `correctness`, який має тип
+```coq
+forall e : expr, Some [exprDenote e] = programDenote (compile e). 
+```
+
+```coq
 Fixpoint compile (e : expr) : program :=
   match e with
     const n => [save n]
   | term b e1 e2 => (compile e2) ++ (compile e1) ++ [eval b]
   end.
+```
