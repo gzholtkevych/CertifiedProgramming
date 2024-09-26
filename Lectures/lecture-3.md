@@ -276,4 +276,18 @@ Definition programDenote (p : program) : option stack := execute p nil.
 # Задача трансляції
 
 >Визначити функцію `compile : expr -> program`, яка перетворює вираз на програму, що має семантичне значення ***узгоджене***
-з семантичним значенням виразу.
+з семантичним значенням виразу.<br/>
+>Узгодженість формально для цієї задачі розуміється як справедливість наступної теореми коректності
+
+```coq
+Theorem correctness : forall e : expr,
+  Some [exprDenote e] = programDenote (compile e).
+```
+
+Таким чином, задача сертифікованого 
+
+Fixpoint compile (e : expr) : program :=
+  match e with
+    const n => [save n]
+  | term b e1 e2 => (compile e2) ++ (compile e1) ++ [eval b]
+  end.
