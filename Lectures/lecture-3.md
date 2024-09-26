@@ -328,3 +328,18 @@ Fixpoint compile (e : expr) : program :=
 В той же час, вираз, що будується за допомогою конструктора `term`, компілюєтья у програму для другого операнда,
 до якої доєднана програма для першого операнда, а до результату в кінець додана інструкція `eval b`, де `b` є
 знаком операції в корені виразу.
+
+Давайте відкомпілюємо вираз `eMULT_ePLUS_c2_c3_c4` (див. вище)
+
+```coq
+Example p := compile eMULT_ePLUS_c2_c3_c4.
+```
+
+Тоді отримаємо
+
+```coq
+Eval compute in p.
+= [save 4; save 3; save 2; eval PLUS; eval MULT]
+     : program
+``` 
+Eval compute in programDenote p.
