@@ -296,6 +296,26 @@ forall e : expr, Some [exprDenote e] = programDenote (compile e).
 
 ## Функція `compile`
 
+Ми будемо будувати програму за допомогою функції конкатенації списків
+
+```coq
+app = fun A : Type =>
+  fix app (l m : list A) {struct l} : list A :=
+    match l with
+      [] => m
+    | a :: l1 => a :: app l1 m
+    end
+: forall A : Type, list A -> list A -> list A
+```
+зі стандартної бібліотеки `Coq.Init.Datatypes`.
+Ця функція зазвичай використовується як інфіксний бінарний оператор
+
+```coq
+Infix "++" := app (right associativity, at level 60) : list_scope.
+```
+
+Давайте визначимо `compile` у такий спосіб 
+
 ```coq
 Fixpoint compile (e : expr) : program :=
   match e with
@@ -303,3 +323,5 @@ Fixpoint compile (e : expr) : program :=
   | term b e1 e2 => (compile e2) ++ (compile e1) ++ [eval b]
   end.
 ```
+
+Інакше кажучи, вираз що є константою `n : nat` транслюється у програму з однієї інструкції `save n`. 
