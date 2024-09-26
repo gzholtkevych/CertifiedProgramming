@@ -207,7 +207,7 @@ Abort.
 
 (* Асоциативність конкатенації списків -------------------------------------- *)
 (* Знайти все, де використовується ++ *) Search " ++ ".
-(* Перевіремо app_assoc_reverse       *) Check app_assoc_reverse.
+(* Перевіремо app_assoc_reverse       *) Check app_assoc.
 
 
 Lemma seq_calc : forall (s : stack) (e : expr) (p : program),
@@ -215,12 +215,12 @@ Lemma seq_calc : forall (s : stack) (e : expr) (p : program),
 Proof.
   intros until e. revert s.
   induction e.
-  -(* індукція для Const *) intros. simpl. reflexivity.
-  -(* індукція для Binop *)
+  -(* індукція для const *) intros. simpl. reflexivity.
+  -(* індукція для term *)
     intros. simpl.
-    rewrite app_assoc_reverse.
+    rewrite <- app_assoc.
     rewrite IHe2.
-    rewrite app_assoc_reverse. simpl.
+    rewrite <- app_assoc. simpl.
     rewrite IHe1. trivial. 
 Qed.
 
@@ -231,9 +231,9 @@ Theorem correctness : forall e : expr,
 Proof.
   intros.
   induction e.
-  -(* індукція для Const *)
+  -(* індукція для const *)
     simpl. unfold programDenote. trivial.
-  -(* індукція для Binop *)
+  -(* індукція для term *)
     simpl. unfold programDenote.
     repeat rewrite seq_calc. trivial.
 Qed.
