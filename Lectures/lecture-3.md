@@ -383,3 +383,23 @@ forall e : expr, Some [exprDenote e] = programDenote (compile e)
 Proof.
 ```
 
+Перша тактика
+
+```coq
+  intro.
+```
+
+Знімає універсальний квантор, а зв'язану ним змінну переносить у контекст
+
+```coq
+1 subgoal
+e : expr
+______________________________________(1/1)
+Some [exprDenote e] = programDenote (compile e)
+```
+
+Далі розумно вести індукцію за цією змінною, оскільки вона має індуктивний тип
+
+```coq
+  induction e.
+```
