@@ -31,7 +31,7 @@
 - `denote` $e$ має снмантичне значення `denote` (`denote` $e_1$) $+$ (`denote` $e_2$), якщо $e$ має вигляд `term PLUS` $e_1\ e_2$, де $e_1$ та $e_2$ є арифметичними виразами;
 - `denote` $e$ має снмантичне значення `denote` (`denote` $e_1$) $\cdot$ (`denote` $e_2$), якщо $e$ має вигляд `term MULT` $e_1\ e_2$, де $e_1$ та $e_2$ є арифметичними виразами.
 
-Спроєктуємо та специфікуємо yеобхідні типи даних для представлення арифметичних виразів, використовуючи The Coq Proof Assistant.
+Спроєктуємо та специфікуємо необхідні типи даних для представлення арифметичних виразів, використовуючи The Coq Proof Assistant.
 
 Першим нашим кроком буде специфікація типу даних `binop`, призначеного для представлення символів бінарних операцій:
 
@@ -366,4 +366,12 @@ Eval compute in programDenote p.
 ```coq
 Theorem correctness : forall e : expr,
   Some [exprDenote e] = programDenote (compile e).
+```
+
+Після виконання команди `Theorem` у вікні стану доведення отримаємо
+
+```coq
+1 subgoal
+______________________________________(1/1)
+forall e : expr, Some [exprDenote e] = programDenote (compile e)
 ```
