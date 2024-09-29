@@ -563,6 +563,84 @@ execute ((compile e2 ++ compile e1 ++ [eval b]) ++ p0) s =
 execute p0 (binopDenote b (exprDenote e1) (exprDenote e2) :: s)
 ```
 
+Тепер замінимо праву частину леми `app_assoc` лівою
+
+```coq
+    rewrite <- app_assoc.
+```
+
+і отримаємо
+
+```coq
+1 subgoal
+b : binop
+e1, e2 : expr
+IHe1 : forall (s : stack) (p : program), execute (compile e1 ++ p) s = execute p (exprDenote e1 :: s)
+IHe2 : forall (s : stack) (p : program), execute (compile e2 ++ p) s = execute p (exprDenote e2 :: s)
+s : stack
+p0 : program
+______________________________________(1/1)
+execute (compile e2 ++ (compile e1 ++ [eval b]) ++ p0) s =
+execute p0 (binopDenote b (exprDenote e1) (exprDenote e2) :: s)
+```
+Тепер замінемо ліву частину `IHe2` правою,
+
+```coq
+    rewrite IHe2.
+```
+
+що дасть
+
+```coq
+1 subgoal
+b : binop
+e1, e2 : expr
+IHe1 : forall (s : stack) (p : program), execute (compile e1 ++ p) s = execute p (exprDenote e1 :: s)
+IHe2 : forall (s : stack) (p : program), execute (compile e2 ++ p) s = execute p (exprDenote e2 :: s)
+s : stack
+p0 : program
+______________________________________(1/1)
+execute ((compile e1 ++ [eval b]) ++ p0) (exprDenote e2 :: s) =
+execute p0 (binopDenote b (exprDenote e1) (exprDenote e2) :: s)
+```
+
+Ще раз використавши заміну за допомогою леми `app_assoc`
+
+```coq
+    rewrite <- app_assoc. simpl.
+```
+
+отримаємо
+
+```coq
+1 subgoal
+b : binop
+e1, e2 : expr
+IHe1 : forall (s : stack) (p : program), execute (compile e1 ++ p) s = execute p (exprDenote e1 :: s)
+IHe2 : forall (s : stack) (p : program), execute (compile e2 ++ p) s = execute p (exprDenote e2 :: s)
+s : stack
+p0 : program
+______________________________________(1/1)
+execute (compile e1 ++ [eval b] ++ p0) (exprDenote e2 :: s) =
+execute p0 (binopDenote b (exprDenote e1) (exprDenote e2) :: s)
+```
+
+Тепер завершимо доведення, виконавши заміну за допомогою `IHe1` 
+
+```coq
+    rewrite IHe1. trivial. 
+```
+
+```coq
+No more subgoals.
+```
+
+Збережемо доведення за допомогою команди
+
+```coq
+Qed.
+```
+
 
 ----
 
