@@ -59,8 +59,8 @@ The Coq Proof Assistant визначає два базові універсум�
 Сорт `Type` має, насправді, неявний натуральний індекс і посилається на всесвіти ієрархії, при чому
 
 ```math
-\begin{array}{c}\mathcal{U}^{\mathtt{Set}}\\\mathcal{U}^{\mathtt{Prop}}\end{array}\ :\ \mathcal{U}^{\mathtt{Type}_0}\ :\ \mathcal{U}^{\mathtt{Type}_1}\ :\ \ldots
-\ :\ \ldots\ \mathcal{U}^{\mathtt{Type}_k}\ :\ \ \mathcal{U}^{\mathtt{Type}_{k+1}}\ :\ \ldots
+\begin{array}{c}\mathcal{U}_{\mathtt{Set}}\\\mathcal{U}_{\mathtt{Prop}}\end{array}\ :\ \mathcal{U}_{\mathtt{Type}_0}\ :\ \mathcal{U}_{\mathtt{Type}_1}\ :\ \ldots
+\ :\ \ldots\ \mathcal{U}_{\mathtt{Type}_k}\ :\ \ \mathcal{U}_{\mathtt{Type}_{k+1}}\ :\ \ldots
 ```
 
 Давайте подивимося, як це працює в The Coq Proof Assistant.
