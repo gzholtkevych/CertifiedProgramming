@@ -501,5 +501,25 @@ ______________________________________(1/1)
 forall (s : stack) (p0 : program), execute (compile e ++ p0) s = execute p0 (exprDenote e :: s)
 ```
 
+Тепер застосовуємо індукцію по `e`.
+
+```coq
+  induction e.
+```
+
+Це дає
+
+```coq
+2 subgoals
+n : nat
+______________________________________(1/2)
+forall (s : stack) (p0 : program),
+execute (compile (const n) ++ p0) s = execute p0 (exprDenote (const n) :: s)
+______________________________________(2/2)
+forall (s : stack) (p0 : program),
+execute (compile (term b e1 e2) ++ p0) s = execute p0 (exprDenote (term b e1 e2) :: s)
+```
+
+
 ----
 
