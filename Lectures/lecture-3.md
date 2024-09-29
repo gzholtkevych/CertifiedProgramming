@@ -322,8 +322,8 @@ Infix "++" := app (right associativity, at level 60) : list_scope.
 Ця операція є асоциативною
 
 ```coq
-app_assoc_reverse
-     : forall (A : Type) (l m n : list A), (l ++ m) ++ n = l ++ m ++ n
+app_assoc
+     : forall (A : Type) (l m n : list A), l ++ m ++ n = (l ++ m) ++ n
 ```
 
 Це нам далі знадобиться.
@@ -475,4 +475,31 @@ Some [exprDenote (term b e1 e2)] = programDenote (compile (term b e1 e2))
 ```
 
 Ми бачимо, що перша ціль зникла, а у контексті з'явилися припущення, які є вірними для доведення другої цілі.
+
+Однак для того, щоб довести другу ціль, нам знадобиться таке допоміжне твердження.
+
+----
+
+```coq
+Lemma seq_calc : forall (s : stack) (e : expr) (p : program),
+  execute (compile e ++ p) s = execute p (exprDenote e :: s).
+```
+
+Для доведення цієї леми також використовується принцип індукції за стуктурою арифметичного виразу.
+
+```coq
+Proof.
+  intros until e. revert s.
+```
+
+Маємо стан доведення
+
+```coq
+1 subgoal
+e : expr
+______________________________________(1/1)
+forall (s : stack) (p0 : program), execute (compile e ++ p0) s = execute p0 (exprDenote e :: s)
+```
+
+----
 
