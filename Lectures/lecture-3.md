@@ -523,7 +523,7 @@ execute (compile (term b e1 e2) ++ p0) s = execute p0 (exprDenote (term b e1 e2)
 Перша ціль доводиться просто.
 
 ```coq
-(* індукція для const *) intros. simpl. reflexivity.
+  (* індукція для const *) intros. simpl. reflexivity.
 ```
 
 Тепер маємо
@@ -641,6 +641,14 @@ No more subgoals.
 Qed.
 ```
 
-
 ----
 
+Маючи лему `seq_calc`, доведемо другу ціль, що з'явилася в процесі доведення коректності.
+
+```coq
+  (* індукція для term *)
+    simpl. unfold programDenote.
+    repeat rewrite seq_calc. trivial.
+Qed.
+
+```
