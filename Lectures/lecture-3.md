@@ -539,5 +539,30 @@ forall (s : stack) (p0 : program),
 execute (compile (term b e1 e2) ++ p0) s = execute p0 (exprDenote (term b e1 e2) :: s)
 ```
 
+Тут слід зазначити, що `IHe1` та `IHe2` є припущеннями індукції, що виникають при застосуванні конструктора
+`term`.
+
+Застосування
+
+```coq
+    intros. simpl.
+```
+
+дає
+
+```coq
+1 subgoal
+b : binop
+e1, e2 : expr
+IHe1 : forall (s : stack) (p : program), execute (compile e1 ++ p) s = execute p (exprDenote e1 :: s)
+IHe2 : forall (s : stack) (p : program), execute (compile e2 ++ p) s = execute p (exprDenote e2 :: s)
+s : stack
+p0 : program
+______________________________________(1/1)
+execute ((compile e2 ++ compile e1 ++ [eval b]) ++ p0) s =
+execute p0 (binopDenote b (exprDenote e1) (exprDenote e2) :: s)
+```
+
+
 ----
 
