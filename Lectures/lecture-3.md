@@ -520,6 +520,24 @@ forall (s : stack) (p0 : program),
 execute (compile (term b e1 e2) ++ p0) s = execute p0 (exprDenote (term b e1 e2) :: s)
 ```
 
+Перша ціль доводиться просто.
+
+```coq
+(* індукція для const *) intros. simpl. reflexivity.
+```
+
+Тепер маємо
+
+```coq
+1 subgoal
+b : binop
+e1, e2 : expr
+IHe1 : forall (s : stack) (p : program), execute (compile e1 ++ p) s = execute p (exprDenote e1 :: s)
+IHe2 : forall (s : stack) (p : program), execute (compile e2 ++ p) s = execute p (exprDenote e2 :: s)
+______________________________________(1/1)
+forall (s : stack) (p0 : program),
+execute (compile (term b e1 e2) ++ p0) s = execute p0 (exprDenote (term b e1 e2) :: s)
+```
 
 ----
 
