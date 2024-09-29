@@ -4,6 +4,8 @@
 
 Проте ми почнемо з загальної концепції універсумів типів в The Coq Proof Assistant.
 
+# Універсуми типів
+
 Ми досі використовували вираз " $А$ *є типом* "  неформально.
 Зробимо цей вираз більш точним, за допомогою концепції ***всесвітів***, імена яких в The Coq Proof Assistant
 називаються ***сортами***.
@@ -103,17 +105,62 @@ Type
      : Type
 ```
 
+# Локальні контексти
+
+```coq
+Section SecName.
+Variable T : Type.
+```
+
+```coq
+T is declared
+```
+
+```coq
+Hypothesis tnd : forall P : Prop, P \/ ~ P.
+```
+
+```coq
+tnd is declared
+```
+
+```coq
+Check T.
+Check tnd.
+```
+
+```coq
+T
+     : Type
+tnd
+     : forall P : Prop, P \/ ~ P
+```
+
+```coq
+End SecName.
+```
+
+
+```coq
+Fail Check T.
+Fail Check tnd.
+```
+
+
+```coq
+The command has indeed failed with message:
+The reference T was not found in the current environment.
+
+The command has indeed failed with message:
+The reference tnd was not found in the current environment.
+```
+
+# Конструктивна пропозиційна логіка в The Coq Proof Assistant
+
+
 ----
 
 
-Section SecName.
-Variable T : Type.
-Hypothesis tnd : forall P : Prop, P \/ ~ P.
-Check T.
-Check tnd.
-End SecName.
-Fail Check T.
-Fail Check tnd.
 
 Locate False.
 Locate True.
