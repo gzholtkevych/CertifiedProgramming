@@ -428,8 +428,15 @@ conj (fun H : A /\ B => and_ind (fun (HA : A) (HB : B) => conj HB HA) H)
      : A /\ B <-> B /\ A
 ```
 
+Наступною властивістю є асоциативність.
 
+```coq
 Lemma and_assoc : (A /\ B) /\ C <-> A /\ (B /\ C).
+```
+
+Доведення можна реалізувати так.
+
+```coq
 Proof.
   split; intro H.
   - elim H. intros. elim H0. intros. split.
@@ -439,17 +446,30 @@ Proof.
       * assumption.
   - elim H. intros. elim H1. intros; split; [ split; assumption | assumption ].
 Qed.
+```
 
-Lemma and_assoc' : (A /\ B) /\ C <-> A /\ (B /\ C).
-Proof.
-  split; intro H; elim H; intros; [elim H0 | elim H1];
-  intros; repeat split; assumption.
-Qed.
+Подивимося як виглядає терм доведення за допомогою *запиту*.
 
+```coq
 Print Term and_assoc.
+```
 
+*Відпоідь.*
 
+```coq
+and_assoc = 
+conj
+  (fun H : (A /\ B) /\ C =>
+   and_ind (fun (H0 : A /\ B) (H1 : C) => and_ind (fun (H2 : A) (H3 : B) => conj H2 (conj H3 H1)) H0) H)
+  (fun H : A /\ B /\ C =>
+   and_ind (fun (H0 : A) (H1 : B /\ C) => and_ind (fun (H2 : B) (H3 : C) => conj (conj H0 H2) H3) H1) H)
+     : (A /\ B) /\ C <-> A /\ B /\ C
+```
+Завершимо секцію.
+
+```coq
 End andProperties.
+```
 
 
 ----
