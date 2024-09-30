@@ -311,14 +311,15 @@ where
 ?ch : [X : Type |- X -> bool]
 ```
 
+Для побудованого предикату є вірною така властивість звана ***розв'язністю***.
 
-----
-
-
-
-
-
+```coq
 Lemma P_ch_dec : forall ch x, (P ch x \/ ~ P ch x).
+```
+
+Її доведення
+
+```coq
 Proof.
   intros. unfold P.
   case (ch x).
@@ -328,6 +329,17 @@ Proof.
     right. intro. discriminate H.
 Qed.
 End bool_and_Prop.
+```
+
+----
+
+
+
+
+
+
+
+
 Check P.
 Check P_ch_dec.
 
