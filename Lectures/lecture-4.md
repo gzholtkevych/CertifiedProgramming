@@ -201,7 +201,7 @@ The reference tnd was not found in the current environment.
 - `True`, яка моделює тотожньо істину пропозицію,
 - `False`, яка моделює тотожньо хибну пропозицію.
 
-Ці пропозиції вже визначені в стандартній бібліотеці `Inductive Coq.Init.Logic`.
+Ці пропозиції вже визначені в стандартній бібліотеці `Coq.Init.Logic`.
 
 Маємо
 
@@ -257,20 +257,44 @@ Print Term True.
 Inductive True : Prop :=  I : True
 ```
 
+Зауважимо, що стандартна бібліотека `Coq.Init.Datatypes` містить також визначення типу `bool`
+
+*Запит:*
+
+```coq
+Check bool.
+```
+
+*Відповідь:*
+
+```coq
+
+bool
+     : Set
+```
+
+Це малий тип сорту `Set`, який визначається так
+
+*Запит:*
+
+```coq
+Print Term bool.
+```
+
+*Відповідь:*
+
+```coq
+
+Inductive bool : Set :=  true : bool | false : bool
+```
+
+
 
 
 ----
 
 
 
-
-Check False.
-Print Term False.
-Check False_ind.
-
-Check True.
-Print Term True.
-Check True_ind.
 
 Check bool.
 Print Term bool.
