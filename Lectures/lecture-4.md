@@ -288,7 +288,28 @@ Print Term bool.
 Inductive bool : Set :=  true : bool | false : bool
 ```
 
+Зазначимо, що ***предикат*** - функцію з якогось типу `X` у сорт `Prop`, можна побудувати за
+характеристичною функцією - функція з `X` у тип `bool`, `ch`.
 
+*Визгачення і запит.*
+
+```coq
+Section bool_and_Prop.
+Variable X : Type.
+
+Definition P (ch : X -> bool) : X -> Prop :=
+  fun x => ch x = true.
+Check P _.
+```
+
+*Відповідь:*
+
+```coq
+P ?ch
+     : X -> Prop
+where
+?ch : [X : Type |- X -> bool]
+```
 
 
 ----
@@ -296,16 +317,6 @@ Inductive bool : Set :=  true : bool | false : bool
 
 
 
-Check bool.
-Print Term bool.
-Check bool_ind.
-
-Section bool_and_Prop.
-Variable X : Type.
-
-Definition P (ch : X -> bool) : X -> Prop :=
-  fun x => ch x = true.
-Check P _.
 
 Lemma P_ch_dec : forall ch x, (P ch x \/ ~ P ch x).
 Proof.
