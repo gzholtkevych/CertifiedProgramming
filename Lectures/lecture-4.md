@@ -560,28 +560,35 @@ conj
      : forall A B C : Prop, (A \/ B) \/ C <-> A \/ B \/ C
 ```
 
-----
+## Аксиоми конструктивної пропозиційної логіки
 
+Перевіримо тепер, що виконуються всі аксиоми конструктивної пропозиційної логіки.
 
+**Зауваження.**
+Доведення більшості відповідних тверджень запропоновані як вправи.
+У такому разі замість `Proof. ... Qed.` стоїть `Admitted.`
+Для вирішення вправи треба замінити `Admitted.` на `Proof. ... Qed.`, вмістом якого є доведення відповідної леми.
+Максимальна сума балів - 25.
+
+```coq
 Section PLaxioms.
 Variables A B C : Prop.
 
-Lemma ax1 (*16*) : A -> B -> A.
-Admitted.
+Lemma ax1 : A -> B -> A.
+Admitted. (* Вправа L1, оцінюється у 4 бали *)
 
 Lemma ax2 : (A -> B) -> (A -> B -> C) -> A -> C.
 Proof.
   intros H1 H2 H3. apply H2.
   - assumption.
-(*  - apply H1. assumption. *)
-  - pose (H := H1 H3). assumption.
+  - apply H1. assumption.
 Qed.
 
-Lemma ax3 (*16*) : A /\ B -> A.
-Admitted.
+Lemma ax3 : A /\ B -> A.
+Admitted. (* Вправа L2 у 4 бали *)
 
-Lemma ax4 (*16*) : A /\ B -> B.
-Admitted.
+Lemma ax4 : A /\ B -> B.
+Admitted. (* Вправа L3 у 4 бали *)
 
 Lemma ax5 : (A -> B) -> (A -> C) -> A -> (B /\ C).
 Proof.
@@ -590,13 +597,13 @@ Proof.
   - apply H2. assumption.
 Qed.
 
-   Lemma ax6 (*16*) : A -> A \/ B.
-Admitted.
+Lemma ax6 : A -> A \/ B.
+Admitted. (* Вправа L4 у 4 бали *)
 
-Lemma ax7 (*16*) : B -> A \/ B.
-Admitted.
+Lemma ax7 : B -> A \/ B.
+Admitted. (* Вправа L5 у 4 бали *)
 
-   Lemma ax8 : (A -> C) -> (B -> C) -> (A \/ B) -> C.
+Lemma ax8 : (A -> C) -> (B -> C) -> (A \/ B) -> C.
 Proof.
   intros H1 H2 H3.
   elim H3; intro H.
@@ -604,8 +611,8 @@ Proof.
   - apply H2. assumption.
 Qed.
 
-Lemma ax9 (*20*) : (A -> ~ B) -> B -> ~ A.
-Admitted.
+Lemma ax9 : (A -> ~ B) -> B -> ~ A.
+Admitted. (* Вправа L6 у 5 балів *)
 
 End PLaxioms.
 
