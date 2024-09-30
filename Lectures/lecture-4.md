@@ -413,12 +413,21 @@ Proof.
 Qed.
 ```
 
+Вигляд терму доведення дає такий *запит*.
 
-Lemma and_comm' : A /\ B <-> B /\ A.
-Proof. split; intro; elim H; intros; split; assumption. Qed.
-
+```coq
 Print Term and_comm.
-Print Term and_comm'.
+```
+
+*Відповідь.*
+
+```coq
+and_comm = 
+conj (fun H : A /\ B => and_ind (fun (HA : A) (HB : B) => conj HB HA) H)
+  (fun H : B /\ A => and_ind (fun (HB : B) (HA : A) => conj HA HB) H)
+     : A /\ B <-> B /\ A
+```
+
 
 Lemma and_assoc : (A /\ B) /\ C <-> A /\ (B /\ C).
 Proof.
@@ -438,7 +447,7 @@ Proof.
 Qed.
 
 Print Term and_assoc.
-Print Term and_assoc'.
+
 
 End andProperties.
 
