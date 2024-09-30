@@ -471,43 +471,96 @@ conj
 End andProperties.
 ```
 
+## Диз'юнкція
 
-----
+Подивимося, як виглядає визначення диз'юнкції в стандартній бібілотеці `Coq.Init.Logic` за допомогою
+*запиту*
 
-
-Check and_comm.
-Check and_assoc.
-
+```coq
 Check or.
 Print Term or.
-Check or_ind.
+```
 
+*Відповідь.*
+
+```coq
+or
+     : Prop -> Prop -> Prop
+Inductive or (A B : Prop) : Prop :=  or_introl : A -> A \/ B | or_intror : B -> A \/ B
+```
+
+Встановимо тепер властивості диз'юнкції аналогічно з кон'юнкцією.
+
+```coq
 Section orProperties.
 Variables A B C : Prop.
 
 Lemma or_comm : A \/ B <-> B \/ A.
 Proof.
-  split; intro; elim H; intro;
-(*  - right. assumption.
-  - left. assumption.
-  - right. assumption.
-  - left. assumption. *)
-  (right; assumption) || (left; assumption).
+  split.
+  - intro. elim H.
+    + intro. right. assumption.
+    + intro. left. assumption.
+  - intro. elim H.
+    + intro. right. assumption.
+    + intro. left. assumption.
 Qed.
 
 Lemma or_assoc: (A \/ B) \/ C <-> A \/ (B \/ C).
 Proof.
-  split; intro; elim H; intro; try (elim H0; intro);
-  (repeat left; assumption) ||
-    (repeat right; assumption) ||
-    (right; left; assumption) ||
-    (left; right; assumption). 
+  split.
+  - intro.
+    elim H.
+    + intro.
+      elim H0.
+      * intro. left. assumption.
+      * intro. right. left. assumption.
+    + intro. right. right. assumption.
+  - intro.
+    elim H.
+    + intro.
+      left. left. assumption.
+    + intro.
+      elim H0.
+      * intro. left. right. assumption.
+      * intro. right. assumption.
 Qed.
 
 End orProperties.
+```
 
+З'ясуємо, як виглядають отримані терми доведень.<br/>
+*Запит.*
+
+```coq
 Print Term or_comm.
 Print Term or_assoc.
+```
+
+*Відповідь.*
+
+```coq
+or_comm = 
+fun A B : Prop =>
+conj (fun H : A \/ B => or_ind (fun H0 : A => or_intror H0) (fun H0 : B => or_introl H0) H)
+  (fun H : B \/ A => or_ind (fun H0 : B => or_intror H0) (fun H0 : A => or_introl H0) H)
+     : forall A B : Prop, A \/ B <-> B \/ A
+
+or_assoc = 
+fun A B C : Prop =>
+conj
+  (fun H : (A \/ B) \/ C =>
+   or_ind
+     (fun H0 : A \/ B => or_ind (fun H1 : A => or_introl H1) (fun H1 : B => or_intror (or_introl H1)) H0)
+     (fun H0 : C => or_intror (or_intror H0)) H)
+  (fun H : A \/ B \/ C =>
+   or_ind (fun H0 : A => or_introl (or_introl H0))
+     (fun H0 : B \/ C => or_ind (fun H1 : B => or_introl (or_intror H1)) (fun H1 : C => or_intror H1) H0)
+     H)
+     : forall A B C : Prop, (A \/ B) \/ C <-> A \/ B \/ C
+```
+
+----
 
 
 Section PLaxioms.
