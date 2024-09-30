@@ -180,7 +180,7 @@ Fail Check T.
 Fail Check tnd.
 ```
 
-Ця перевірка дає помилку, оскільки ці змінні не існують поза локальним контекстом
+Ця перевірка дає помилку, оскільки змінні `T` та `tnd` не існують поза локальним контекстом
 
 ```coq
 The command has indeed failed with message:
@@ -192,13 +192,78 @@ The reference tnd was not found in the current environment.
 
 # Конструктивна пропозиційна логіка в The Coq Proof Assistant
 
+Побудову моделі пропозиційної логіки почнемо з наступного принущення
+
+>Логічні конструкції (***пропозиції***) є малими типами сорту `Prop`.
+
+Тому, для початку, визначимо дві константні пропозиції
+
+- `True`, яка моделює тотожньо істину пропозицію,
+- `False`, яка моделює тотожньо хибну пропозицію.
+
+Ці пропозиції вже визначені в стандартній бібліотеці `Inductive Coq.Init.Logic`.
+
+Маємо
+
+*Запит:*
+
+```coq
+Check False.
+```
+
+*Відповідь:*
+
+```coq
+False : Prop
+```
+
+*Запит:*
+
+```coq
+Print Term False.
+```
+
+*Відповідь:*
+
+```coq
+Inductive False : Prop :=  
+```
+
+Це визначення означає, що тип `False` є ненаселеним.
+
+Аналогічно для `True` маємо
+
+*Запит:*
+
+```coq
+CheckTrue.
+```
+
+*Відповідь:*
+
+```coq
+True : Prop
+```
+
+*Запит:*
+
+```coq
+Print Term True.
+```
+
+*Відповідь:*
+
+```coq
+Inductive True : Prop :=  I : True
+```
+
+
 
 ----
 
 
 
-Locate False.
-Locate True.
+
 Check False.
 Print Term False.
 Check False_ind.
