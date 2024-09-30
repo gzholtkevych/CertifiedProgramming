@@ -360,10 +360,12 @@ P_ch_dec
 - ***диз'юнкції*** `P \/ Q` та
 - ***імплікації*** `P -> Q`.
 
-Крім того, використовують похідні зв'язки
+Крім того, використовують похідна зв'язка
 
-- ***еквівалентність*** `P <-> Q`, що означає `P -> Q /\ Q -> P` та
 - ***заперечення*** `~ P`, що означає `P -> False`.
+
+**Зауваження.**
+Імплікація моделюється конструктором функціонального типу `->`.
 
 Таким чином, нам треба визначити основні зв'язки.
 Почнемо з визначення кон'юнкції, яке міститься в стандартній бібліотеці `Coq.Init.Logic`.
@@ -383,16 +385,22 @@ and
 Inductive and (A B : Prop) : Prop :=  conj : A -> B -> A /\ B
 ```
 
+Доведемо тепер оцикувані властивості кон'юнкції.
 
-
-----
-
-Check and_ind.
-
+```coq
 Section andProperties.
 Variables A B C : Prop.
+```
 
+Перша з цих властивостей - комутативність.
+
+```coq
 Lemma and_comm : A /\ B <-> B /\ A.
+```
+
+Доведення можна реалізувати так.
+
+```coq
 Proof.
   split; intro.
   - elim H. intros HA HB.
@@ -403,6 +411,8 @@ Proof.
   - elim H. intros HB HA.
     split; assumption.
 Qed.
+```
+
 
 Lemma and_comm' : A /\ B <-> B /\ A.
 Proof. split; intro; elim H; intros; split; assumption. Qed.
@@ -431,6 +441,10 @@ Print Term and_assoc.
 Print Term and_assoc'.
 
 End andProperties.
+
+
+----
+
 
 Check and_comm.
 Check and_assoc.
