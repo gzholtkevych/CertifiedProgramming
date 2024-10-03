@@ -24,6 +24,8 @@ Variable T : Type.
 Hypothesis tnd : forall P : Prop, P \/ ~ P.
 Check T.
 Check tnd.
+Print T.
+Print tnd.
 End SecName.
 Fail Check T.
 Fail Check tnd.
@@ -38,6 +40,7 @@ Check True.
 Print Term True.
 Check True_ind.
 
+Locate bool.
 Check bool.
 Print Term bool.
 Check bool_ind.
