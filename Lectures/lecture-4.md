@@ -189,6 +189,37 @@ The command has indeed failed with message:
 The reference tnd was not found in the current environment.
 ```
 
+# Тактики
+
+## Загальні відомості
+
+To be added!
+
+## Тактики, що використовуються у цій лекції
+
+### Тактики, що завершують доведення
+
+**Тактика** `exact`
+
+```math
+\texttt{'exact h' забезпечує перетворення}\quad
+\dfrac{\begin{array}{c}
+\Gamma \\
+h:A\end{array}}{A}\quad
+\texttt{на}\quad\texttt{No more subgoals}
+```
+
+**Тактика** `assumption`
+
+```math
+\texttt{'assumption' забезпечує перетворення}\quad
+\dfrac{\begin{array}{c}
+\Gamma \\
+h:A\end{array}}{A}\quad
+\texttt{на}\quad\texttt{No more subgoals}
+```
+
+
 # Конструктивна пропозиційна логіка в The Coq Proof Assistant
 
 Побудову моделі пропозиційної логіки почнемо з наступного принущення
@@ -614,30 +645,4 @@ Lemma ax9 : (A -> ~ B) -> B -> ~ A.
 Admitted. (* Вправа L6 у 5 балів *)
 
 End PLaxioms.
-```
-
-# Додаток. Опис тактик, що застосовуються
-
-## Тактики, що завершують доведення
-
-**Тактика** `exact`
-
-```math
-\texttt{застосування 'exact h' перетворює}\quad
-\dfrac{\begin{array}{c}
-\Gamma \\
-h:A\end{array}}{A}\quad
-\texttt{на}\quad\texttt{No more subgoals}
-```
-
-**Тактика** `assumption`
-
-**Тактика** `exact`
-
-```math
-\texttt{застосування 'assumption' перетворює}\quad
-\dfrac{\begin{array}{c}
-\Gamma \\
-h:A\end{array}}{A}\quad
-\texttt{на}\quad\texttt{No more subgoals}
 ```
