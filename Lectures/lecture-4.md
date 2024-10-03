@@ -614,4 +614,30 @@ Lemma ax9 : (A -> ~ B) -> B -> ~ A.
 Admitted. (* Вправа L6 у 5 балів *)
 
 End PLaxioms.
+```
 
+# Додаток. Опис тактик, що застосовуються
+
+## Тактики, що завершують доведення
+
+**Тактика** `exact`
+
+```math
+\texttt{застосування 'exact h' перетворює}\quad
+\dfrac{\begin{array}{c}
+\Gamma \\
+h:A\end{array}}{A}\quad
+\texttt{на}\quad\texttt{No more subgoals}
+```
+
+**Тактика** `assumption`
+
+**Тактика** `exact`
+
+```math
+\texttt{застосування 'assumption' перетворює}\quad
+\dfrac{\begin{array}{c}
+\Gamma \\
+h:A\end{array}}{A}\quad
+\texttt{на}\quad\texttt{No more subgoals}
+```
