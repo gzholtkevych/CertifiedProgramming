@@ -65,6 +65,7 @@ End bool_and_Prop.
 Check P.
 Check P_ch_dec.
 
+Locate and.
 Check and.
 Print Term and.
 Check and_ind.
@@ -75,8 +76,8 @@ Variables A B C : Prop.
 Lemma and_comm : A /\ B <-> B /\ A.
 Proof.
   split; intro.
-  - elim H. intros HA HB.
-    (* pose (HBA := conj HB HA). exact HBA.   *)
+  - destruct H as (HA, HB).
+    (* pose (HBA := conj HB HA). exact HBA. *)
     split.
     + assumption.
     + assumption.
@@ -93,12 +94,10 @@ Print Term and_comm'.
 Lemma and_assoc : (A /\ B) /\ C <-> A /\ (B /\ C).
 Proof.
   split; intro H.
-  - elim H. intros. elim H0. intros. split.
+  - elim H. intros HAB HC. elim HAB. intros HA HB. split.
     + assumption.
-    + split.
-      * assumption.
-      * assumption.
-  - elim H. intros. elim H1. intros; split; [ split; assumption | assumption ].
+    + split; assumption.
+  - elim H. intros. elim H1. intros. split; try split; assumption.
 Qed.
 
 Lemma and_assoc' : (A /\ B) /\ C <-> A /\ (B /\ C).
@@ -115,6 +114,7 @@ End andProperties.
 Check and_comm.
 Check and_assoc.
 
+Locate or.
 Check or.
 Print Term or.
 Check or_ind.
@@ -125,12 +125,12 @@ Variables A B C : Prop.
 Lemma or_comm : A \/ B <-> B \/ A.
 Proof.
   split.
-  - intro. elim H.
-    + intro. right. assumption.
-    + intro. left. assumption.
-  - intro. elim H.
-    + intro. right. assumption.
-    + intro. left. assumption.
+  - intro. destruct H as [HA | HB].
+    + right. assumption.
+    + left. assumption.
+  - intro. elim H; intro; [right | left]; assumption.
+(*    + intro. right. assumption.
+    + intro. left. assumption. *)
 Qed.
 
 Lemma or_assoc: (A \/ B) \/ C <-> A \/ (B \/ C).
