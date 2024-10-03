@@ -211,7 +211,7 @@ Inductive list (A : Type) : Type :=  nil : list A | cons : A -> list A -> list A
 
 Програма обчислювача є списком команд, кожна з яки є або
 
-- командою `save` $n$, яка проштовхує $n$ в стек, або
+- командою `save n`, яка проштовхує `n` в стек, або
 - командою `eval bop`, яка виконує операцію, що визначається значенням `bop`, над двома числами з вершини стеку, видалючі їх і натомість
 проштовхуючи в стек результат обчислення.
 Зрозуміло, що ця команда може виконуватися тільки у випадку, якщо у стеку зберігається не менше двох чисел.
@@ -322,8 +322,8 @@ Infix "++" := app (right associativity, at level 60) : list_scope.
 Ця операція є асоциативною
 
 ```coq
-app_assoc_reverse
-     : forall (A : Type) (l m n : list A), (l ++ m) ++ n = l ++ m ++ n
+app_assoc
+     : forall (A : Type) (l m n : list A), l ++ m ++ n = (l ++ m) ++ n
 ```
 
 Це нам далі знадобиться.
@@ -476,3 +476,181 @@ Some [exprDenote (term b e1 e2)] = programDenote (compile (term b e1 e2))
 
 Ми бачимо, що перша ціль зникла, а у контексті з'явилися припущення, які є вірними для доведення другої цілі.
 
+Однак для того, щоб довести другу ціль, нам знадобиться таке допоміжне твердження.
+
+----
+
+```coq
+Lemma seq_calc : forall (s : stack) (e : expr) (p : program),
+  execute (compile e ++ p) s = execute p (exprDenote e :: s).
+```
+
+Для доведення цієї леми також використовується принцип індукції за стуктурою арифметичного виразу.
+
+```coq
+Proof.
+  intros until e. revert s.
+```
+
+Маємо стан доведення
+
+```coq
+1 subgoal
+e : expr
+______________________________________(1/1)
+forall (s : stack) (p0 : program), execute (compile e ++ p0) s = execute p0 (exprDenote e :: s)
+```
+
+Тепер застосовуємо індукцію по `e`.
+
+```coq
+  induction e.
+```
+
+Це дає
+
+```coq
+2 subgoals
+n : nat
+______________________________________(1/2)
+forall (s : stack) (p0 : program),
+execute (compile (const n) ++ p0) s = execute p0 (exprDenote (const n) :: s)
+______________________________________(2/2)
+forall (s : stack) (p0 : program),
+execute (compile (term b e1 e2) ++ p0) s = execute p0 (exprDenote (term b e1 e2) :: s)
+```
+
+Перша ціль доводиться просто.
+
+```coq
+  (* індукція для const *) intros. simpl. reflexivity.
+```
+
+Тепер маємо
+
+```coq
+1 subgoal
+b : binop
+e1, e2 : expr
+IHe1 : forall (s : stack) (p : program), execute (compile e1 ++ p) s = execute p (exprDenote e1 :: s)
+IHe2 : forall (s : stack) (p : program), execute (compile e2 ++ p) s = execute p (exprDenote e2 :: s)
+______________________________________(1/1)
+forall (s : stack) (p0 : program),
+execute (compile (term b e1 e2) ++ p0) s = execute p0 (exprDenote (term b e1 e2) :: s)
+```
+
+Тут слід зазначити, що `IHe1` та `IHe2` є припущеннями індукції, що виникають при застосуванні конструктора
+`term`.
+
+Застосування
+
+```coq
+    intros. simpl.
+```
+
+дає
+
+```coq
+1 subgoal
+b : binop
+e1, e2 : expr
+IHe1 : forall (s : stack) (p : program), execute (compile e1 ++ p) s = execute p (exprDenote e1 :: s)
+IHe2 : forall (s : stack) (p : program), execute (compile e2 ++ p) s = execute p (exprDenote e2 :: s)
+s : stack
+p0 : program
+______________________________________(1/1)
+execute ((compile e2 ++ compile e1 ++ [eval b]) ++ p0) s =
+execute p0 (binopDenote b (exprDenote e1) (exprDenote e2) :: s)
+```
+
+Тепер замінимо праву частину леми `app_assoc` лівою
+
+```coq
+    rewrite <- app_assoc.
+```
+
+і отримаємо
+
+```coq
+1 subgoal
+b : binop
+e1, e2 : expr
+IHe1 : forall (s : stack) (p : program), execute (compile e1 ++ p) s = execute p (exprDenote e1 :: s)
+IHe2 : forall (s : stack) (p : program), execute (compile e2 ++ p) s = execute p (exprDenote e2 :: s)
+s : stack
+p0 : program
+______________________________________(1/1)
+execute (compile e2 ++ (compile e1 ++ [eval b]) ++ p0) s =
+execute p0 (binopDenote b (exprDenote e1) (exprDenote e2) :: s)
+```
+Тепер замінемо ліву частину `IHe2` правою,
+
+```coq
+    rewrite IHe2.
+```
+
+що дасть
+
+```coq
+1 subgoal
+b : binop
+e1, e2 : expr
+IHe1 : forall (s : stack) (p : program), execute (compile e1 ++ p) s = execute p (exprDenote e1 :: s)
+IHe2 : forall (s : stack) (p : program), execute (compile e2 ++ p) s = execute p (exprDenote e2 :: s)
+s : stack
+p0 : program
+______________________________________(1/1)
+execute ((compile e1 ++ [eval b]) ++ p0) (exprDenote e2 :: s) =
+execute p0 (binopDenote b (exprDenote e1) (exprDenote e2) :: s)
+```
+
+Ще раз використавши заміну за допомогою леми `app_assoc`
+
+```coq
+    rewrite <- app_assoc. simpl.
+```
+
+отримаємо
+
+```coq
+1 subgoal
+b : binop
+e1, e2 : expr
+IHe1 : forall (s : stack) (p : program), execute (compile e1 ++ p) s = execute p (exprDenote e1 :: s)
+IHe2 : forall (s : stack) (p : program), execute (compile e2 ++ p) s = execute p (exprDenote e2 :: s)
+s : stack
+p0 : program
+______________________________________(1/1)
+execute (compile e1 ++ [eval b] ++ p0) (exprDenote e2 :: s) =
+execute p0 (binopDenote b (exprDenote e1) (exprDenote e2) :: s)
+```
+
+Тепер завершимо доведення, виконавши заміну за допомогою `IHe1` 
+
+```coq
+    rewrite IHe1. trivial. 
+```
+
+```coq
+No more subgoals.
+```
+
+Збережемо доведення за допомогою команди
+
+```coq
+Qed.
+```
+
+----
+
+Маючи лему `seq_calc`, доведемо другу ціль, що з'явилася в процесі доведення коректності.
+
+```coq
+  (* індукція для term *)
+    simpl. unfold programDenote.
+    repeat rewrite seq_calc. trivial.
+Qed.
+```
+
+Таким чином, ми не тільки **розробили функцію** `compile`, яка транслює арифметичний вираз у програму стекового обчислювача,
+що обчислює цей вираз, але й **створили сертифікат** `correctness` **цієї функції**, який гарантує її коректність.

@@ -41,9 +41,10 @@ Inductive binop := PLUS | MULT.
 (*   Який тип має binop_rect?: *) Check binop_rect.
 
 (* Визнначення типу "expr" - вираз у відповідності до граматичних правил:
-     expr -> 'const' nat | 'term' binop expr expr                                *)
+     expr -> 'const' nat
+           | 'term' binop expr expr                                           *)
 Inductive expr : Set :=
-  | const : nat -> expr                    (* перше граматичне правило *)
+    const : nat -> expr                    (* перше граматичне правило *)
   | term : binop -> expr -> expr -> expr.  (* друге граматичне правило *)
 
 (* Долслідження наперед визначеного типу nat -------------------------------- *)
@@ -64,7 +65,7 @@ Example eMULT_ePLUS_c2_c3_c4 := term MULT ePLUS_c2_c3 c4.
    натуральних аргументів                                                     *)
 Definition binopDenote (bop : binop) : nat -> nat -> nat :=
   match bop with
-  | PLUS => plus
+    PLUS => plus
   | MULT => mult
   end.
 
@@ -79,7 +80,7 @@ Definition binopDenote (bop : binop) : nat -> nat -> nat :=
 (* Інтерпретація виразів                                                      *)
 Fixpoint exprDenote (e : expr) : nat :=
   match e with
-  | const n        => n
+    const n        => n
   | term bop e1 e2 => binopDenote bop (exprDenote e1) (exprDenote e2)
   end.
 
@@ -95,8 +96,8 @@ Eval simpl in exprDenote eMULT_ePLUS_c2_c3_c4.
 (* Простий стековий обчислювач має
      пам'ять, яка структурована як стек, та
      програму, яка є списком інструкцій.
-   Таким чином, нам знадобиться формаліщація списку, яка забезпечується
-   використанням имац list із стандартної бібліотеки.                         *)
+   Таким чином, нам знадобиться формалізація стеку, яка забезпечується
+   використанням типу list із стандартної бібліотеки.                         *)
 
 (* Долслідження наперед визначеного типу list ------------------------------- *)
 (*   В якому контекстів визначений list?: *) Locate list.
@@ -131,9 +132,9 @@ Definition program := list instr.  (* програми обчислювача   
 Definition instrDenote (i : instr) : stack -> option stack :=
   fun s =>
     match i with
-    | save n => Some (n :: s)
+      save n => Some (n :: s)
     | eval b => match s with
-                | n :: m :: s' => Some ((binopDenote b n m) :: s')
+                  n :: m :: s' => Some ((binopDenote b n m) :: s')
                 | _            => None
                 end
     end.
@@ -142,7 +143,7 @@ Definition instrDenote (i : instr) : stack -> option stack :=
 Fixpoint execute (p : program) : stack -> option stack :=
   fun s =>
     match p with
-    | nil     => Some s
+      nil     => Some s
     | i :: p' => match instrDenote i s with
                  | None    => None
                  | Some s' => execute p' s'
@@ -157,7 +158,7 @@ Definition programDenote (p : program) : option stack := execute p nil.
    обчислювача ============================================================== *)
 Fixpoint compile (e : expr) : program :=
   match e with
-  | const n => [save n]
+    const n => [save n]
   | term b e1 e2 => (compile e2) ++ (compile e1) ++ [eval b]
   end.
 
@@ -190,8 +191,10 @@ Theorem correctness : forall e : expr,
 Proof.
   intro.
   induction e.
-  - unfold programDenote. (* simpl. reflexivity. *) trivial.
-  - 
+  (* конструктор const *)
+    unfold programDenote. simpl. reflexivity. (* trivial. *)
+  (* конструктор term *)
+    
 Abort.
 
 (* Принцип послідовної компіляції ------------------------------------------- *)
@@ -229,7 +232,7 @@ Print Term seq_calc.
 Theorem correctness : forall e : expr,
   Some [exprDenote e] = programDenote (compile e).
 Proof.
-  intros.
+  intro.
   induction e.
   -(* індукція для Const *)
     simpl. unfold programDenote. trivial.
