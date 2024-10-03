@@ -197,26 +197,26 @@ To be added!
 
 ## Тактики, що використовуються у цій лекції
 
-### Тактики, що завершують доведення
+### Тактики для завершення доведень
 
 **Тактика** `exact`
 
 ```math
-\texttt{'exact h' забезпечує перетворення}\quad
+\texttt{exact h}\textit{ забезпечує перетворення}\quad\begin{array}{c}
 \dfrac{\begin{array}{c}
 \Gamma \\
-h:A\end{array}}{A}\quad
-\texttt{на}\quad\texttt{No more subgoals}
+h:A\end{array}}{A}\end{array}\quad
+\text{на}\quad\texttt{No more subgoals}
 ```
 
 **Тактика** `assumption`
 
 ```math
-\texttt{'assumption' забезпечує перетворення}\quad
+\texttt{assumption}\text{ забезпечує перетворення}\quad\begin{array}{c}
 \dfrac{\begin{array}{c}
 \Gamma \\
-h:A\end{array}}{A}\quad
-\texttt{на}\quad\texttt{No more subgoals}
+h:A\end{array}}{A}\end{array}\quad
+\text{на}\quad\texttt{No more subgoals}
 ```
 
 
