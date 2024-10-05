@@ -78,8 +78,8 @@ Variables A B C : Prop.
 Lemma and_comm : A /\ B <-> B /\ A.
 Proof.
   split; intro.
-  - elim H. intros HA HB.
-    (* pose (HBA := conj HB HA). exact HBA.   *)
+  - destruct H as (HA, HB).
+    (* pose (HBA := conj HB HA). exact HBA. *)
     split.
     + assumption.
     + assumption.
@@ -125,12 +125,12 @@ Variables A B C : Prop.
 Lemma or_comm : A \/ B <-> B \/ A.
 Proof.
   split.
-  - intro. elim H.
-    + intro. right. assumption.
-    + intro. left. assumption.
-  - intro. elim H.
-    + intro. right. assumption.
-    + intro. left. assumption.
+  - intro. destruct H as [HA | HB].
+    + right. assumption.
+    + left. assumption.
+  - intro. elim H; intro; [right | left]; assumption.
+(*    + intro. right. assumption.
+    + intro. left. assumption. *)
 Qed.
 
 Lemma or_assoc: (A \/ B) \/ C <-> A \/ (B \/ C).
