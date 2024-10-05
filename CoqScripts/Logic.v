@@ -23,7 +23,9 @@ Section SecName.
 Variable T : Type.
 Hypothesis tnd : forall P : Prop, P \/ ~ P.
 Check T.
+Print T.
 Check tnd.
+Print tnd.
 End SecName.
 Fail Check T.
 Fail Check tnd.
@@ -57,12 +59,15 @@ Proof.
   - (* case ch x = true *)
     left. reflexivity.
   - (* case ch x = false *)
-    right. intro. discriminate H.
+    right. unfold "_ <> _". intro. discriminate H.
 Qed.
 End bool_and_Prop.
 Check P.
 Check P_ch_dec.
+Check P_ch_dec.
+Print P_ch_dec.
 
+Locate and.
 Check and.
 Print Term and.
 Check and_ind.
@@ -91,12 +96,8 @@ Print Term and_comm'.
 Lemma and_assoc : (A /\ B) /\ C <-> A /\ (B /\ C).
 Proof.
   split; intro H.
-  - elim H. intros. elim H0. intros. split.
-    + assumption.
-    + split.
-      * assumption.
-      * assumption.
-  - elim H. intros. elim H1. intros; split; [ split; assumption | assumption ].
+  - elim H. intros. elim H0. intros; repeat split; assumption.
+  - elim H. intros. elim H1. intros; repeat split; assumption.
 Qed.
 
 Lemma and_assoc' : (A /\ B) /\ C <-> A /\ (B /\ C).
@@ -113,6 +114,7 @@ End andProperties.
 Check and_comm.
 Check and_assoc.
 
+Locate or.
 Check or.
 Print Term or.
 Check or_ind.
@@ -161,7 +163,9 @@ Section PLaxioms.
 Variables A B C : Prop.
 
 Lemma ax1 : A -> B -> A.
-Admitted.
+Admitted.  (* замінити Admitted на Proof. <доведення> Qed                     *)
+Check ax1.
+Print ax1.
 
 Lemma ax2 : (A -> B) -> (A -> B -> C) -> A -> C.
 Proof.
