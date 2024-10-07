@@ -211,7 +211,7 @@ The reference tnd was not found in the current environment.
 Стан доведення зазвичай представляється в інтерактивних середовищах The Coq Proof Assistant як
 
 ```math
-\begin{array}{c}\Gamma_1\\\hline G_1\\\hline\ldots\\\hline G_n\end{array},
+\begin{array}{c}\Gamma_1\\\hline G_1\\\hline\ldots\\\hline G_n\end{array}
 \quad\textsf{а після доведення $G_1$ як}\quad
 \begin{array}{c}\Gamma_2\\\hline G_2\\\hline\ldots\\\hline G_n\end{array}
 \quad\textsf{і так далі.}
@@ -233,23 +233,25 @@ The reference tnd was not found in the current environment.
 
 **Тактика** `assumption`
 
+
 ```math
-\texttt{assumption}\text{ забезпечує перетворення}\quad\begin{array}{c}
-\dfrac{\begin{array}{c}
-\Gamma \\
-h:A\end{array}}{A}\end{array}\quad
-\text{на}\quad\texttt{No more subgoals}
+\begin{array}{lcccc}\texttt{assumption} &
+\textit{забезпечує перетворення} &
+\dfrac{\begin{array}{c}\Gamma \\ h:A\end{array}}{A} &
+\text{на} &
+\texttt{No more subgoals}\end{array}
 ```
 
 **Тактика** `discriminate`
 
 ```math
-\texttt{discriminate h}\text{ забезпечує перетворення}\quad\begin{array}{c}
-\dfrac{\begin{array}{c}
-\Gamma \\
-h:A\end{array}}{A}\end{array}\quad
-\text{на}\quad\texttt{No more subgoals}
+\begin{array}{lcccc}\texttt{discriminate h} &
+\textit{ забезпечує перетворення} &
+\begin{array}{c}\dfrac{\begin{array}{c}\Gamma \\ h:t_1=t_2\end{array}}{A}\end{array} &
+\text{на} &
+\texttt{No more subgoals}\end{array}
 ```
+за умови, що *терми* $t_1$ *та* $t_2$ *мають один індуктивний тип, проте побудовані різними конструкторами*.
 
 ### Інші тактики
 
