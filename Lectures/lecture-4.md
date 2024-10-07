@@ -255,8 +255,6 @@ The reference tnd was not found in the current environment.
 
 ### Інші тактики
 
-
-
 **Тактика** `intro`
 
 
@@ -269,9 +267,10 @@ The reference tnd was not found in the current environment.
 **Тактика** `elim`
 
 
-
 **Тактики** `left` та `right`
 
+
+**Тактика** `pose`
 
 
 # Конструктивна пропозиційна логіка в The Coq Proof Assistant
