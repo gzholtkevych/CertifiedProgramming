@@ -193,7 +193,29 @@ The reference tnd was not found in the current environment.
 
 ## Загальні відомості
 
-To be added!
+***Тактики*** в The Coq Proof Assistant – це інструменти, які використовуються для побудови доказів.
+Уявіть, що ви доводите математичну теорему.
+Тактики – це як маленькі кроки, які ви робите, щоб перейти від одного етапу доказу до наступного.
+Кожна тактика виконує певну операцію над поточним ***станом доказу***, наближаючи вас до кінцевої мети –
+доведення теореми.
+
+Стан доказу визначається набором цілей з припущеннями, за умови виконання яких ціль з набору має бути доведена.
+Тобто, стан доказу може бути представлений списком
+
+```math
+\left[\begin{array}{ccc}\dfrac{\Gamma_1}{G_1} & \ldots &\dfrac{\Gamma_n}{G_n}\end{array}\right].
+```
+
+Якщо цей список є попрожнім, то такий стан відповідає завершенню доведення.
+
+Стан доведення зазвичай представляється в інтерактивних середовищах The Coq Proof Assistant як
+
+```math
+\begin{array}{c}\Gamma_1\\\hline G_1\\\hline\ldots\\\hline G_n\end{array}
+\quad\textsf{а після доведення $G_1$ як}\quad
+\begin{array}{c}\Gamma_2\\\hline G_2\\\hline\ldots\\\hline G_n\end{array}
+\quad\textsf{і так далі.}
+```
 
 ## Тактики, що використовуються у цій лекції
 
@@ -202,22 +224,53 @@ To be added!
 **Тактика** `exact`
 
 ```math
-\texttt{exact h}\textit{ забезпечує перетворення}\quad\begin{array}{c}
-\dfrac{\begin{array}{c}
-\Gamma \\
-h:A\end{array}}{A}\end{array}\quad
-\text{на}\quad\texttt{No more subgoals}
+\begin{array}{lcccc}\texttt{exact h} &
+\textit{забезпечує перетворення} &
+\dfrac{\begin{array}{c}\Gamma \\ h:A\end{array}}{A} &
+\text{на} &
+\texttt{No more subgoals}\end{array}
 ```
 
 **Тактика** `assumption`
 
+
 ```math
-\texttt{assumption}\text{ забезпечує перетворення}\quad\begin{array}{c}
-\dfrac{\begin{array}{c}
-\Gamma \\
-h:A\end{array}}{A}\end{array}\quad
-\text{на}\quad\texttt{No more subgoals}
+\begin{array}{lcccc}\texttt{assumption} &
+\textit{забезпечує перетворення} &
+\dfrac{\begin{array}{c}\Gamma \\ h:A\end{array}}{A} &
+\text{на} &
+\texttt{No more subgoals}\end{array}
 ```
+
+**Тактика** `discriminate`
+
+```math
+\begin{array}{lcccc}\texttt{discriminate h} &
+\textit{ забезпечує перетворення} &
+\begin{array}{c}\dfrac{\begin{array}{c}\Gamma \\ h:t_1=t_2\end{array}}{A}\end{array} &
+\text{на} &
+\texttt{No more subgoals}\end{array}
+```
+за умови, що *терми* $t_1$ *та* $t_2$ *мають один індуктивний тип, проте побудовані різними конструкторами*.
+
+### Інші тактики
+
+**Тактика** `intro`
+
+
+**Тактика** `unfold`
+
+
+**Тактика** `split`
+
+
+**Тактика** `elim`
+
+
+**Тактики** `left` та `right`
+
+
+**Тактика** `pose`
 
 
 # Конструктивна пропозиційна логіка в The Coq Proof Assistant
