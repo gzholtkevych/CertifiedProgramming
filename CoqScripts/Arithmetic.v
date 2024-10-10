@@ -18,14 +18,14 @@ Proof. intros. symmetry. assumption. Qed.
        transitivity).
 *)
 Lemma eq_trans_nat : forall n m k : nat, n = m -> m = k -> n = k.
-Proof. intros * H1 H2. rewrite H1. assumption. Qed.
+Proof. intros * H1 H2. rewrite <- H2. assumption. Qed.
 (*
 Аксиомі ін'єктивності відповідає тактика injection.
 6. Для будь-яких n та m, n = m тоді і тільки тоді, коли S n = S m. 
  *)
 Lemma inj_nat : forall n m : nat, n = m <-> S n = S m.
 Proof.
-  intros. (* unfold "_ <-> _". *) split; intro.
+  intros. unfold "_ <-> _". split; intro.
   - rewrite H. reflexivity.
   - injection H. intro. assumption.
 Qed.
