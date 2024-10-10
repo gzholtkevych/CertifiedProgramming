@@ -257,9 +257,45 @@ The reference tnd was not found in the current environment.
 
 **Тактика** `intro`
 
+*Варіант 1.*
+
+```math
+\begin{array}{lcccc}\texttt{intro [h]} &
+\textit{ забезпечує перетворення} &
+\begin{array}{c}\dfrac{\Gamma}{A\to B}\end{array} &
+\text{на} &
+\begin{array}{c}\dfrac{\begin{array}{c}\Gamma \\ h:A\end{array}}{B}\end{array}\end{array}
+```
+Якщо `h` не вказано, тоді ідентифікактор обирається системою автоматично.
+
+*Варіант 2.*
+
+```math
+\begin{array}{lcccc}\texttt{intro [y]} &
+\textit{ забезпечує перетворення} &
+\begin{array}{c}\dfrac{\Gamma}{\forall\ x:A,\ B_x}\end{array} &
+\text{на} &
+\begin{array}{c}\dfrac{\begin{array}{c}\Gamma \\ y:A\end{array}}{B_y}\end{array}\end{array}
+```
+Тут $x$ та $y$ є змінними, причому $y$ має бути свіжою для $\Gamma$.<br/>
+Якщо `y` не вказано, тоді обирається ідентифікактор $x$.
 
 **Тактика** `unfold`
 
+ця тактика застосовується для заміни ідкнтифікатора його визначенням в поточному оточенні.
+
+*Варіант 1.*
+
+`unfold x` заміняє ідентифікатор $x$ його визначенням у поточній цілі.
+
+*Варіант 2.*
+
+`unfold x in h` заміняє ідентифікатор $x$ його визначенням у припущенні $h$.
+
+*Варіант 3.*
+
+`unfold x in h1, h2 |-*` заміняє ідентифікатор $x$ його визначенням у припущеннях $h1$, $h2$ та
+поточній цілі.
 
 **Тактика** `split`
 
