@@ -90,7 +90,7 @@ Proof.
   intros.
   induction k as [| k' IHk'].
   - (* simpl in H. assumption. *) trivial.
-  - apply IHk'.
+  - apply IHk'. clear IHk'.
     rewrite plus_comm in H. rewrite n_plus_Sm in H.
     replace (S k' + m) with (S (k' + m)) in H.
     + rewrite plus_comm. injection H. intro. assumption.
