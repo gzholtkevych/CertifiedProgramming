@@ -1,6 +1,9 @@
 Require Import Lists.List.
 Import ListNotations.
 
+Locate comparison.
+Check comparison.
+Print comparison.
 
 Module Type CMP.
 

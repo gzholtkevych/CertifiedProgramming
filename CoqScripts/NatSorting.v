@@ -13,6 +13,7 @@ Inductive sorted : list nat -> Prop :=
                першому елементу списку, то отримаємо відсортований список     *)
       forall n m lst,
         n <= m -> sorted (m :: lst) -> sorted (n :: m :: lst).
+Print sorted.
 
 #[export] Hint Constructors sorted : sortHDB.
 
@@ -25,7 +26,9 @@ Proof.
   apply sortS. apply le_S. apply le_n.
   apply sort1.
 Але оскільки ми застосовуємо тільки конструктори, то можна і так *)
- repeat constructor. Qed.
+  repeat constructor.
+Qed.
+
 
 Fixpoint occnum (n : nat) (lst : list nat) : nat :=
   (* кількість входжень числа n в список lst                                  *)
@@ -35,6 +38,10 @@ Fixpoint occnum (n : nat) (lst : list nat) : nat :=
   end.
 Eval simpl in occnum 3 [].
 Eval simpl in occnum 3 [1; 3; 2; 5; 3].
+(*
+Check Nat.eq_dec.
+Print Nat.eq_dec.
+*)
 
 Definition same : list nat -> list nat -> Prop :=
   (* визначення списків однакових за складом, які будемо називати схожими     *)
@@ -46,7 +53,10 @@ Section SameProperties.
 Variables (lst1 lst2 lst3 : list nat) (n m : nat).
 
   Lemma same_reflexivity : same lst1 lst1.
-  Proof. auto with sortHDB. Qed.
+  Proof.
+    (* unfold same. intro. reflexivity. *)
+    auto with sortHDB.
+  Qed.
 
   Lemma same_symmetry : same lst1 lst2 -> same lst2 lst1.
   Proof. auto with sortHDB. Qed.
@@ -60,7 +70,7 @@ Variables (lst1 lst2 lst3 : list nat) (n m : nat).
      то отримаємо схожі списки                                                *)
   Proof. unfold same. intros. simpl. rewrite H. reflexivity. Qed.
 
-  Lemma same_permutation : 
+  Lemma same_permutation :
     same lst1 lst2 -> same (n :: m :: lst1) (m :: n :: lst2).
   (* якщо в голови схожих списків додати в різному порядку одні й ті самі 
      два числа у кожний то отримаємо схожі списки                             *)
@@ -81,16 +91,18 @@ Definition SortCert :=
       (forall lst, sorted (f lst)) }.    (* та утворює відсортований список   *)
 
 (*                 Алгоритм сортування вставкою                               *)
-Fixpoint aux_ins_sort (n : nat) (lst : list nat) : list nat :=
+Fixpoint aux_ins_sort (n : nat) (lst : list nat) {struct lst} : list nat :=
   (* вставляє число у список перед першим елементом списку, що не менший 
      за це число                                                              *)
   match lst with
-  | [] => [n]
-  | m :: lst' => if le_gt_dec n m then n :: m :: lst'
+    [] => [n]
+  | m :: lst' => if le_gt_dec n m (* n <= m *) then n :: m :: lst'
                  else m :: (aux_ins_sort n lst')
   end.
 Eval simpl in aux_ins_sort 3 [1; 4; 2; 5].
 Eval simpl in aux_ins_sort 3 [1; 3; 4; 2; 5].
+Locate le_gt_dec.
+Check le_gt_dec.
 
 Lemma aux_ins_sort_same : forall n lst, same (aux_ins_sort n lst) (n :: lst).
 (* вставка числа у список в голову і за допомогою функції 'aux_ins_sort'
@@ -99,12 +111,13 @@ Proof.
   intros. revert n.
   induction lst as [| m lst' IHlst'].
   - auto with sortHDB.
-  - intros n k. simpl aux_ins_sort.
-    destruct (le_gt_dec n m).
-    + reflexivity.
-    + assert (occnum k (n :: m :: lst') = occnum k (m :: n :: lst')). {
-        rewrite same_permutation with lst' lst' _ _ _; auto with sortHDB. }
-      rewrite H. now apply same_cons.
+  - intro. simpl.
+    destruct (le_gt_dec n m); simpl.
+    + auto with sortHDB.
+    + pose (IH := IHlst' n).
+      assert (same (m :: n :: lst') (n :: m :: lst')). { auto with sortHDB. }
+      apply same_transitivity with (m :: n :: lst'); trivial.
+      auto with sortHDB.
 Qed.
 
 Lemma gt_le : forall n m, n > m -> m <= n.
@@ -137,7 +150,7 @@ Fixpoint ins_sort (lst : list nat) : list nat :=
   end.
 Eval simpl in ins_sort [5; 4; 3; 2; 1].
 
-Theorem ins_sort_certified : SortCert.
+Definition ins_sort_certified : SortCert.
 (* сертифікована функція сортування вставкою                                  *)
 Proof. 
   exists ins_sort.
@@ -161,4 +174,8 @@ Proof.
   - induction lst as [| n lst' IHlst'].
     + auto with sortHDB.
     + simpl. now apply aux_ins_sort_inv.
-Qed.
+Defined.
+
+Check ins_sort_certified.
+Check (proj1_sig ins_sort_certified).
+Check (proj2_sig ins_sort_certified).
