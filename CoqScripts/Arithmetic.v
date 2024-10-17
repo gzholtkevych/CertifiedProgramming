@@ -7,12 +7,12 @@ Print nat.  (* індуктивне визначення відповідає а
 3. Для будь-якого n, вірно n = n (тактика reflexivity).
 *)
 Lemma eq_refl_nat : forall n : nat, n = n.
-Proof. intro. reflexivity. Qed.
+Proof. reflexivity. Qed.
 (*
 4. Для будь-яких n та m, n = m гарантує m = n (тактика symmetry).
 *)
 Lemma eq_symm_nat : forall n m : nat, n = m -> m = n.
-Proof. intros. symmetry. assumption. Qed.
+Proof. symmetry. assumption. Qed.
 (*
 5. Для будь-яких n, m та k, n = m та m = k гарантують n = k (тактика
        transitivity).
