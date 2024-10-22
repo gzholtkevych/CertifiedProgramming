@@ -128,6 +128,8 @@ Proof.
   apply Nat.le_trans with (m := S m); assumption.
 Qed.
 
+#[export] Hint Resolve gt_le: sortHDB.
+
 Lemma aux_ins_sort_inv :
   forall n lst, sorted lst -> sorted (aux_ins_sort n lst).
   (* функція 'aux_ins_sort' зберігає відсортованість списку                   *)
@@ -139,7 +141,6 @@ Proof.
     destruct (le_gt_dec n m); simpl.
     + auto with sortHDB.
     + destruct (le_gt_dec n k); auto with sortHDB.
-      constructor; [ now apply gt_le | assumption ].
 Qed.
 
 Fixpoint ins_sort (lst : list nat) : list nat :=
@@ -163,14 +164,14 @@ Proof.
         { apply aux_ins_sort_same. }
         rewrite H. rewrite <- e. simpl.
         destruct (Nat.eq_dec n n); try contradiction.
-          rewrite IHlst'; reflexivity.
-      * simpl. destruct (Nat.eq_dec n m); try contradiction.
+          rewrite IHlst'. reflexivity.
+      * simpl. destruct (Nat.eq_dec n m) ; try contradiction.
           rewrite IHlst'.
           assert (
             same (aux_ins_sort m (ins_sort lst')) ( m :: ins_sort lst')).
           { apply aux_ins_sort_same. }
-          rewrite H. simpl. destruct (Nat.eq_dec n m). try contradiction.
-          reflexivity.
+          rewrite H. simpl. destruct (Nat.eq_dec n m);
+          contradiction || reflexivity.
   - induction lst as [| n lst' IHlst'].
     + auto with sortHDB.
     + simpl. now apply aux_ins_sort_inv.

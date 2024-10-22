@@ -9,7 +9,7 @@ Module Type CMP.
 
   Parameter X : Set.
   Parameter cmp : X -> X -> comparison.
-  
+
   Axiom cmp1 : forall x y, cmp x y = Eq <-> x = y.
   Axiom cmp2 : forall x y, cmp x y = Lt <-> cmp y x = Gt.
   Axiom cmp3 : forall x y z, cmp x y = Lt -> cmp y z = Lt -> cmp x z = Lt.
@@ -240,12 +240,13 @@ End InsertionSort.
 (* ----------------------- Випадок натуральних чисел ------------------------ *)
 Require Import Arith.Compare_dec.
 Require Import Arith.PeanoNat.
+
 Module CMPNat <: CMP.
 
   Definition X := nat.
   Definition cmp (x y : X) : comparison :=
     match lt_eq_lt_dec x y with
-    | inleft LE => match LE with
+    | inleft HLe => match HLe with
                    | left _  => Lt
                    | right _ => Eq
                    end
@@ -256,41 +257,57 @@ Module CMPNat <: CMP.
   Proof.
     intros. unfold cmp.
     destruct (lt_eq_lt_dec x y) as [HLe | HGt];
-    try destruct HLe as [HLt | HEq]; split; intro;
-    try discriminate H; trivial; [ rewrite H in HLt | rewrite H in HGt ];
-    exfalso; now apply Nat.lt_irrefl with y.
+    try destruct HLe as [HLt | HEq].
+    - split; intro; try discriminate H. rewrite H in HLt.
+      exfalso. now apply Nat.lt_irrefl with y.
+    - split; intro; assumption || reflexivity.
+    - split; intro; try discriminate H. rewrite H in HGt.
+      exfalso. now apply Nat.lt_irrefl with y.
   Qed.
 
   Lemma cmp2 : forall x y : X, cmp x y = Lt <-> cmp y x = Gt.
   Proof.
     intros. unfold cmp.
     destruct (lt_eq_lt_dec x y) as [HLe | HGt];
-    try destruct HLe as [HLt | HEq];
-    destruct (lt_eq_lt_dec y x) as [HLe | HGt'];
-    try destruct HLe as [HLt' | HEq']; split; intro;
-    try reflexivity; try discriminate H; assert (x < x);
-    try (now apply Nat.lt_trans with y);
-    try (now rewrite HEq' in HLt);
-    try (now rewrite <- HEq in HGt'); exfalso;
-    try (now apply Nat.lt_irrefl with x).
+    try destruct HLe as [HLt | HEq].
+    - split; intro.
+      + destruct (lt_eq_lt_dec y x) as [HLe | HGt];
+        try destruct HLe as [HLt' | HEq].
+        * exfalso. apply Nat.lt_irrefl with y. now apply Nat.lt_trans with x.
+        * rewrite HEq in HLt. exfalso. now apply Nat.lt_irrefl with x.
+        * reflexivity.
+      + reflexivity.
+    - split; intro.
+      + destruct (lt_eq_lt_dec x y) as [HLe | HGt];
+        try destruct HLe as [HLt | HEq].
+        * discriminate H.
+        * destruct (lt_eq_lt_dec y x) as [HLe | HGt'];
+          try destruct HLe as [HLt | HEq']; discriminate H.
+      + rewrite HEq in H.
+        destruct (lt_eq_lt_dec y y) as [HLe | HGt];
+        try destruct HLe as [HLt | HEq']; try discriminate H.
+        exfalso. now apply Nat.lt_irrefl with y.
+    - split; intro.
+      + discriminate H.
+      + destruct (lt_eq_lt_dec y x) as [HLe | HGt'];
+        try destruct HLe as [HLt | HEq]; try discriminate H.
+        exfalso. apply Nat.lt_irrefl with y. now apply Nat.lt_trans with x.
   Qed.
 
   Lemma cmp3 : forall x y z : X, cmp x y = Lt -> cmp y z = Lt -> cmp x z = Lt.
   Proof.
     intros * H1 H2. unfold cmp in H1, H2 |-*.
     destruct (lt_eq_lt_dec x y) as [HLe | HGt];
-    try destruct HLe as [HLt | HEq];
-    try destruct (lt_eq_lt_dec y z) as [HLe | HGt'];
-    try destruct HLe as [HLt' | HEq']; try discriminate.
+    try destruct HLe as [HLt | HEq]; try discriminate H1.
+    destruct (lt_eq_lt_dec y z) as [HLe | HGt];
+    try destruct HLe as [HLt' | HEq]; try discriminate H2.
     destruct (lt_eq_lt_dec x z) as [HLe | HGt];
-    try destruct HLe as [HLt'' | HEq''].
+    try destruct HLe as [HLt'' | HEq].
     - reflexivity.
-    - rewrite HEq'' in HLt.
-      assert (y < y). { now apply Nat.lt_trans with z. }
-      exfalso. now apply Nat.lt_irrefl with y.
+    - rewrite HEq in HLt.
+      exfalso. apply Nat.lt_irrefl with y. now apply Nat.lt_trans with z.
     - assert (x < z). { now apply Nat.lt_trans with y. }
-      assert (x < x). { now apply Nat.lt_trans with z. }
-      exfalso. now apply Nat.lt_irrefl with x.
+      exfalso. apply Nat.lt_irrefl with x. now apply Nat.lt_trans with z.
   Qed.
 End CMPNat.
 
@@ -301,6 +318,6 @@ Import NatInsertionSort.
 Eval simpl in ins_sort [5; 4; 3; 2; 1].
 
 
-(* -------------------------- Випадок цілих чисел --------------------------- *)
+(* ---------------------- Випадок цілих чисел (тип Z) ----------------------- *)
 (* наведіть відповідний текст, аналогічний випадку натуральних чисел тут      *)
 
