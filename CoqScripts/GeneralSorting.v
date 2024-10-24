@@ -39,14 +39,16 @@ Module toTSO (M : CMP) <: TSO with Definition X := M.X.
   Lemma lt_irrefl : forall x, ~ lt x x.
   Proof.
     intros * H. unfold lt in H.
-    assert (M.cmp x x = Eq). { apply M.cmp1. reflexivity. }
-    rewrite H0 in H. discriminate H.
+    assert (x = x). { reflexivity. }
+    pose (H1 := (proj2 (M.cmp1 x x)) H0).
+    rewrite H1 in H. discriminate H.
   Qed.
   Lemma lt_trans : forall x y z, lt x y -> lt y z -> lt x z.
   Proof.
     unfold lt. exact M.cmp3.
   Qed.
 
+(* --------------------- Defining lt_eq_lt_dec ------------------------------ *)
   Definition lt_eq_gt_dec (x y : X) : {lt x y} + {x = y} + {lt y x}.
   Proof.
     destruct (M.cmp x y) eqn : V.
@@ -58,10 +60,12 @@ Module toTSO (M : CMP) <: TSO with Definition X := M.X.
 (* ----------------- Additional Definitions and Facts ----------------------- *)
   Definition eq_dec (x y : X) : {x = y} + {x <> y}.
   Proof.
-    destruct (lt_eq_gt_dec x y) as [HLe | HGt]; try destruct HLe as [HLt | HEq].
-    - right. intro. rewrite H in HLt. now apply lt_irrefl with y.
-    - now left.
-    - right. intro. rewrite H in HGt. now apply lt_irrefl with y.
+    destruct (M.cmp x y) eqn: V.
+    - left. apply M.cmp1. assumption.
+    - right. intro. rewrite H in V. assert (y = y). { reflexivity. }
+      pose (H1 := (proj2 (M.cmp1 y y)) H0). rewrite H1 in V. discriminate V.
+    - right. intro. rewrite H in V. assert (y = y). { reflexivity. }
+      pose (H1 := (proj2 (M.cmp1 y y)) H0). rewrite H1 in V. discriminate V.
   Defined.
 
   Definition le (x y : X) := lt x y \/ x = y.
