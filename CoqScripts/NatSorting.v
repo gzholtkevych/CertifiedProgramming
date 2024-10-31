@@ -30,7 +30,7 @@ Proof.
 Qed.
 
 
-Fixpoint occnum (n : nat) (lst : list nat) : nat :=
+Fixpoint occnum (n : nat) (lst : list nat) {struct lst} : nat :=
   (* кількість входжень числа n в список lst                                  *)
   match lst with
   | [] => 0
@@ -164,14 +164,12 @@ Proof.
         { apply aux_ins_sort_same. }
         rewrite H. rewrite <- e. simpl.
         destruct (Nat.eq_dec n n); try contradiction.
-          rewrite IHlst'. reflexivity.
-      * simpl. destruct (Nat.eq_dec n m) ; try contradiction.
-          rewrite IHlst'.
-          assert (
-            same (aux_ins_sort m (ins_sort lst')) ( m :: ins_sort lst')).
-          { apply aux_ins_sort_same. }
-          rewrite H. simpl. destruct (Nat.eq_dec n m);
-          contradiction || reflexivity.
+          rewrite IHlst'; reflexivity.
+      * simpl. rewrite IHlst'.
+        assert (same (aux_ins_sort m (ins_sort lst')) ( m :: ins_sort lst')). {
+          apply aux_ins_sort_same. }
+        rewrite H. simpl. destruct (Nat.eq_dec n m). try contradiction.
+        reflexivity.
   - induction lst as [| n lst' IHlst'].
     + auto with sortHDB.
     + simpl. now apply aux_ins_sort_inv.

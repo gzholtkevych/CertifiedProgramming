@@ -6,7 +6,9 @@ End SIG.
 
 Module nat_SIG_Opaque : SIG.
   Definition X := nat.
+Fail End nat_SIG_Opaque.
   Definition x := 3.
+Fail End nat_SIG_Opaque.
   Definition y := false.
 Fail End nat_SIG_Opaque.
 
