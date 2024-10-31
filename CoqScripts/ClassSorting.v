@@ -97,7 +97,6 @@ Proof.
 Qed.
 
 End ComparableFacts.
-
 Arguments le_gt_dec {X} {cmp} {HComparable}.
 Arguments sorted {X} {cmp}.
 Arguments sort0 {X} {cmp}.

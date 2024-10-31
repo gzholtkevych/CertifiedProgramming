@@ -29,11 +29,13 @@ Definition origin : Point := {| xc := 0; yc := 0 |}.
 Eval compute in xc origin.
 Eval compute in yc origin.
 
-Class aMonoid (X : Set) (comp : X -> X-> X) (e : X) := {
+Class aMonoid (X : Set) (comp : X -> X -> X) (e : X) := {
   assoc : forall x y z, comp (comp x y) z = comp x (comp y z);
   left_unit : forall x, comp e x = x;
   right_unit : forall x, comp x e = x
 }.
+
+Print aMonoid.
 
 Structure Monoid := mkMonoid {
   X : Set;
@@ -67,9 +69,9 @@ Let e := e m.
   Proof.
     intros.
     pose (Hue := H e). pose (Heu := H0 e).
-    destruct (gMonoid m).
-    pose(H1ue := right_unit0).
-    now rewrite H1ue in Hue.
+    destruct (gMonoid m) as (assoc, lunit, runit).
+    pose(H1ue := runit).
+    rewrite H1ue in Hue. assumption.
   Qed.
 End MonoidTheory.
 Check unit_unieq.
