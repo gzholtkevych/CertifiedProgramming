@@ -18,6 +18,13 @@ Record Point : Set := pnt {
   yc : nat
 }.
 
+(*
+Structure Point : Set := pnt {
+  xc : nat;
+  yc : nat
+}.
+*)
+
 Definition origin : Point := {| xc := 0; yc := 0 |}.
 Eval compute in xc origin.
 Eval compute in yc origin.
@@ -48,19 +55,18 @@ Definition nat_plus_monoid := {|
 
 Section MonoidTheory.
 Variable m : Monoid.
-(*
-  Let X := X m.
-  Let comp := comp m.
-  Let e := e m.
-*)
+Let X := X m.
+Let comp := comp m.
+Let e := e m.
+
   Lemma unit_unieq : 
-    forall u : X m,
-      (forall x : X m, (comp m) u x = x) ->
-      (forall x : X m, (comp m) x u = x) ->
-        u = e m.
+    forall u : X,
+      (forall x : X, comp u x = x) ->
+      (forall x : X, comp x u = x) ->
+        u = e.
   Proof.
     intros.
-    pose (Hue := H (e m)). pose (Heu := H0 (e m)).
+    pose (Hue := H e). pose (Heu := H0 e).
     destruct (gMonoid m).
     pose(H1ue := right_unit0).
     now rewrite H1ue in Hue.
