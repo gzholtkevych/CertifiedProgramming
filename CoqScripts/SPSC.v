@@ -57,9 +57,22 @@ Inductive expr : Set :=
 
 Example c2 := const 2.
 Example c3 := const 3.
+Check c2.
 Example ePLUS_c2_c3 := term PLUS c2 c3.
+Check ePLUS_c2_c3.
 Example c4 := const 4.
-Example eMULT_ePLUS_c2_c3_c4 := term MULT ePLUS_c2_c3 c4.
+Example eMULT_ePLUS_c2_c3_c4 := term MULT ePLUS_c2_c3 c4. (* (2 + 3) * 4
+term
+  MULT
+  term
+    PLUS
+      const
+        2
+      const
+        3
+  const
+    4
+ *)
 
 (* Інтерпретація бінарних операцій як натуральнозначних функцій двох
    натуральних аргументів                                                     *)
@@ -224,7 +237,7 @@ Proof.
     rewrite app_assoc_reverse.
     rewrite IHe2.
     rewrite app_assoc_reverse. simpl.
-    rewrite IHe1. trivial. 
+    rewrite IHe1; trivial. 
 Qed.
 
 Print Term seq_calc.
