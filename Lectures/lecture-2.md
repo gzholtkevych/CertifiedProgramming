@@ -132,13 +132,14 @@ graph TD
 
 ```mermaid
 graph TD
-    A{ } ---> B[/x\]
+    A(( )) ---> B((x))
     A ---> N
     B ---> M
     subgraph M
-        C[ ] ---> D((x))
-        C ---> E((y))
-        C ---> F((x))
+        direction TD
+        C(( )) ---> D(x)
+        C ---> E(y)
+        C ---> F(x)
     end
 ```
 
