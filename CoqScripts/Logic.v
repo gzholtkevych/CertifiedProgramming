@@ -41,6 +41,9 @@ Check bool.
 Print Term bool.
 Check bool_ind.
 
+Check true.
+Print Term true.
+
 Section bool_and_Prop.
 Variable X : Type.
 
@@ -59,7 +62,6 @@ Proof.
 Qed.
 End bool_and_Prop.
 Check P.
-Check P_ch_dec.
 Check P_ch_dec.
 Print P_ch_dec.
 
