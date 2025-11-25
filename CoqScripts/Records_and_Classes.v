@@ -17,6 +17,10 @@ Record Point : Set := pnt {
   xc : nat;
   yc : nat
 }.
+Check Point.
+Print Point.
+Check xc.
+Print xc.
 
 (*
 Structure Point : Set := pnt {
@@ -55,6 +59,7 @@ Defined.
 Definition nat_plus_monoid := {|
   X := nat; comp := plus; e := 0; gMonoid := nat_plus_monoid_instance |}.
 
+
 Section MonoidTheory.
 Variable m : Monoid.
 Let X := X m.
@@ -67,14 +72,12 @@ Let e := e m.
       (forall x : X, comp x u = x) ->
         u = e.
   Proof.
-    intros.
-    pose (Hue := H e). pose (Heu := H0 e).
-    destruct (gMonoid m) as (assoc, lunit, runit).
-    pose(H1ue := runit).
-    rewrite H1ue in Hue. assumption.
+    intros * Hleft Hright.
+    pose (Hleft_e := Hleft e). pose (Hright_e := Hright e).
+    destruct (gMonoid m) as [assoc lunit runit].
+    rewrite runit in Hleft_e. assumption.
   Qed.
 End MonoidTheory.
 Check unit_unieq.
 
 Example O_unique := unit_unieq nat_plus_monoid.
-Check O_unique.

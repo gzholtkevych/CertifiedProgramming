@@ -1,5 +1,10 @@
-Locate nat.
-Print nat.  (* індуктивне визначення відповідає аксиомам
+(* Завдання № 2:
+   -------------------------------------------------------------------------
+   У цьому файлі доведіть недоведені твердження:
+   O_mult_n, n_mult_O, mult_unit_n, n_mult_unit, mult_comm, mult_assoc, le_asymm.
+*)
+
+(* індуктивне визначення відповідає аксиомам
 1. 0 є натуральним числом.
 2. Длі будь-якого натурального числа n, S n є натуральним числом.
 
@@ -29,8 +34,6 @@ Proof.
   - rewrite H. reflexivity.
   - injection H. intro. assumption.
 Qed.
-Check inj_nat.
-Print inj_nat.
 
 (* Наступна аксиома гарантується тактикою discriminate
 7. Для будь-якого n, не вірно S n = 0  *)
@@ -41,11 +44,6 @@ Qed.
 (* Аксиома індукції генерується при визначені індуктивного типу
 8. Для будь-якого предиката P, P 0 та P n -> P (S n) для всіх n гарантують,
    що P є тотожньо вірним. *)
-Check nat_ind.
-
-Print Nat.add.
-Print Nat.mul.
-Print Scope nat_scope.
 
 (*
 Натуральні числа з операцією додавання утворюють комутативний моноїд, тобто
@@ -103,24 +101,22 @@ Proof.
   - apply plus_comm.
 Qed.
 
-Lemma O_mult_n (*15*) : forall n : nat, 0 * n = 0.
+Lemma O_mult_n : forall n : nat, 0 * n = 0.
 Admitted.
 
-Lemma n_mult_0 (*15*) : forall n : nat, n * 0 = 0.
+Lemma n_mult_0 : forall n : nat, n * 0 = 0.
 Admitted.
 
-(* 1 = S 0 *)
-
-Lemma unit_mult_n (*15*) : forall n : nat, 1 * n = n.
+Lemma unit_mult_n : forall n : nat, 1 * n = n.
 Admitted.
 
-Lemma n_mult_unit (*15*) : forall n : nat, n * 1 = n.
+Lemma n_mult_unit : forall n : nat, n * 1 = n.
 Admitted.
 
-Lemma mult_comm (*20*) : forall n m : nat, n * m = m * n.
+Lemma mult_comm : forall n m : nat, n * m = m * n.
 Admitted.
 
-Lemma mult_assoc (*20*) : forall n m k : nat, n * m * k = n * (m * k).
+Lemma mult_assoc : forall n m k : nat, n * m * k = n * (m * k).
 Admitted.
 
 (* Відношення '<=' визначається як індуктивний предикат *)

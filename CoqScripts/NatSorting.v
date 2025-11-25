@@ -3,6 +3,13 @@ Import ListNotations.
 Require Import Arith.PeanoNat.
 Require Import Arith.Compare_dec.
 
+(* Задача сортування списків натуральних чисел.
+Маєжмо
+  список натуральних чисел lst
+Очикуємо
+  список, якій містить тіж самі елементи перевпорядковані так,
+  що вони в списку злва направо не спадають
+*)
 
 Inductive sorted : list nat -> Prop :=
   | sort0 : (* порожній список є відсортованим                                *)
@@ -48,6 +55,20 @@ Definition same : list nat -> list nat -> Prop :=
   fun lst' lst'' => forall n, occnum n lst' = occnum n lst''.
 
 #[export] Hint Unfold same : sortHDB.
+
+Example s123: same [1; 2; 2; 3] [3; 2; 1; 2].
+Proof.
+  unfold same. intro.
+  destruct n as [| n'].
+  1: { simpl. reflexivity. }
+  destruct n' as [| n'].
+  1: { simpl. reflexivity. }
+  destruct n' as [| n'].
+  1: { simpl. reflexivity. }
+  destruct n' as [| n'].
+  1: { simpl. reflexivity. }
+  simpl. reflexivity.
+Qed.
 
 Section SameProperties.
 Variables (lst1 lst2 lst3 : list nat) (n m : nat).
@@ -135,8 +156,7 @@ Lemma aux_ins_sort_inv :
   (* функція 'aux_ins_sort' зберігає відсортованість списку                   *)
 Proof.
   intros. elim H; simpl; auto with sortHDB.
-  - intro m. case (le_gt_dec n m); constructor;
-    assumption || constructor || now apply gt_le.
+  - intro m. case (le_gt_dec n m); intro; constructor; auto with sortHDB.
   - intros m k lst' H1 H2 H3.
     destruct (le_gt_dec n m); simpl.
     + auto with sortHDB.

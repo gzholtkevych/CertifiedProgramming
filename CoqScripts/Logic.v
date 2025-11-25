@@ -4,17 +4,9 @@
    Сорт Type насправді індексований натуральними числами
       Type_1, ..., Type_k, ..., але індекс завжди прихований.
    Кожний терм t населяє певний тип T, що позначається через t : T.
-   Наприклад, Prop : Set, Set : Type_1, Type_k : Type_{k+1}.
-   Наспроавді постулюється справедливість таких суджень:
-      Prop : Set
-      Set : Type_1
-      Type_n : Type_m, якщо n < m
 *)
 
-Check Set.
-Check Prop.
-Check Type.
-
+(*
 Section SecName.
 Variable T : Type.
 Hypothesis tnd : forall P : Prop, P \/ ~ P.
@@ -64,44 +56,58 @@ End bool_and_Prop.
 Check P.
 Check P_ch_dec.
 Print P_ch_dec.
+*)
+Locate False.
+Check False.
+Print False.
+
+Locate True.
+Check True.
+Print True.
+Check I.
+Print I.
 
 Locate and.
 Check and.
-Print Term and.
-Check and_ind.
+Print and.
 
 Section andProperties.
 Variables A B C : Prop.
 
 Lemma and_comm : A /\ B <-> B /\ A.
 Proof.
-  split; intro.
-  - destruct H as (HA, HB).
+  split.
+  1: {
+    intro. destruct H as (HA, HB).
     (* pose (HBA := conj HB HA). exact HBA. *)
     split.
-    + assumption.
-    + assumption.
-  - elim H. intros HB HA.
-    split; assumption.
+    1: { assumption. }
+    assumption. }
+  intro. destruct H as (HA, HB).
+  split.
+  1: { assumption. }
+  assumption.
 Qed.
 
 Lemma and_comm' : A /\ B <-> B /\ A.
-Proof. split; intro; elim H; intros; split; assumption. Qed.
+Proof. split; intro; destruct H; split; assumption. Qed.
 
 Print Term and_comm.
 Print Term and_comm'.
 
 Lemma and_assoc : (A /\ B) /\ C <-> A /\ (B /\ C).
 Proof.
-  split; intro H.
-  - elim H. intros. elim H0. intros; repeat split; assumption.
-  - elim H. intros. elim H1. intros; repeat split; assumption.
+  split; intro.
+  - destruct H as (HAB, HC). destruct HAB as (HA, HB).
+    repeat split; assumption.
+  - destruct H as (HA, HBC). destruct HBC as (HB, HC).
+    repeat split; assumption.
 Qed.
 
 Lemma and_assoc' : (A /\ B) /\ C <-> A /\ (B /\ C).
 Proof.
-  split; intro H; elim H; intros; [elim H0 | elim H1];
-  intros; repeat split; assumption.
+  split; intro; destruct H as (H1, H2); [destruct H1 | destruct H2];
+  repeat split; assumption.
 Qed.
 
 Print Term and_assoc.
@@ -114,8 +120,7 @@ Check and_assoc.
 
 Locate or.
 Check or.
-Print Term or.
-Check or_ind.
+Print or.
 
 Section orProperties.
 Variables A B C : Prop.
@@ -125,24 +130,24 @@ Proof.
 (* Оскільки логічна еквівалентність є кон'юнкцією двох імплікацій, розглянемо
    кожну з цих імплікацій *)
   split.
-  - (* у вирадку першої з цих імплікацій припустимо, що її антицендкнт є 
+  - (* у вирадку першої з цих імплікацій припустимо, що її антицендент є 
        вірним *)
     intro.
     (* розглянемо окремо припущення про справедливість кожного з диз'юнктів 
        гіпотези H *)
-    destruct H as [HA | HB].
+    destruct H as [H | H].
     + (* якщо вірним є лівий диз'юнкт, то він підтверджує правий диз'юнкт 
          цілі *) 
       right. assumption.
     + (* якщо ж вірним є правий диз'юнкт, то він підтверджує лівий диз'юнкт
-         ціді*)
+         цілі*)
       left. assumption.
-  - (* у вирадку першої з цих імплікацій припустимо, що її антицендкнт є 
+  - (* у вирадку другої з цих імплікацій припустимо, що її антицендент є 
        вірним *) 
     intro.
     (* розглянемо окремо припущення про справедливість кожного з диз'юнктів 
        гіпотези H *)
-    destruct H as [HB | HA].
+    destruct H as [H | H].
     + (* якщо вірним є правий диз'юнкт, то він підтверджує правий диз'юнкт 
          цілі *)
       right. assumption.
@@ -153,35 +158,36 @@ Qed.
 
 Lemma or_assoc: (A \/ B) \/ C <-> A \/ (B \/ C).
 Proof.
-  split.
-  - intro.
-    elim H.
-    + intro.
-      elim H0.
-      * intro. left. assumption.
-      * intro. right. left. assumption.
-    + intro. right. right. assumption.
-  - intro.
-    elim H.
-    + intro.
-      left. left. assumption.
-    + intro.
-      elim H0.
-      * intro. left. right. assumption.
-      * intro. right. assumption.
+  split; intro.
+  - destruct H as [H | H]; try destruct H as [H | H].
+    + left. assumption.
+    + right. left. assumption.
+    + right. right. assumption.
+  - destruct H as [H | H]; try destruct H as [H | H].
+    + left. left. assumption.
+    + left. right. assumption.
+    + right. assumption.
+Qed.
+
+Lemma or_assoc': (A \/ B) \/ C <-> A \/ (B \/ C).
+Proof.
+  split; intro; destruct H as [H | H]; try destruct H as [H | H];
+  (left; assumption) || (right; assumption) || idtac;
+  (left; left; assumption) || (left; right; assumption) ||
+  (right; left; assumption) || (right; right; assumption).
 Qed.
 
 End orProperties.
 
-Print Term or_comm.
-Print Term or_assoc.
+Check or_comm.
+Check or_assoc.
 
 
 Section PLaxioms.
 Variables A B C : Prop.
 
-Lemma ax1 : A -> B -> A.
-Admitted.  (* замінити Admitted на Proof. <доведення> Qed                     *)
+Lemma ax1 : A -> B -> A.  (* замінити Admitted на Proof. <доведення> Qed. *)
+Admitted.
 Check ax1.
 Print ax1.
 
@@ -193,10 +199,10 @@ Proof.
   - pose (H := H1 H3). assumption.
 Qed.
 
-Lemma ax3 : A /\ B -> A.
+Lemma ax3 : A /\ B -> A.  (* замінити Admitted на Proof. <доведення> Qed. *)
 Admitted.
 
-Lemma ax4 : A /\ B -> B.
+Lemma ax4 : A /\ B -> B.  (* замінити Admitted на Proof. <доведення> Qed. *)
 Admitted.
 
 Lemma ax5 : (A -> B) -> (A -> C) -> A -> (B /\ C).
@@ -206,10 +212,10 @@ Proof.
   - apply H2. assumption.
 Qed.
 
-Lemma ax6 : A -> A \/ B.
+Lemma ax6 : A -> A \/ B.  (* замінити Admitted на Proof. <доведення> Qed. *)
 Admitted.
 
-Lemma ax7 : B -> A \/ B.
+Lemma ax7 : B -> A \/ B.  (* замінити Admitted на Proof. <доведення> Qed. *)
 Admitted.
 
 Lemma ax8 : (A -> C) -> (B -> C) -> (A \/ B) -> C.
@@ -220,7 +226,8 @@ Proof.
   - apply H2. assumption.
 Qed.
 
-Lemma ax9 : (A -> ~ B) -> B -> ~ A.
+Lemma ax9 : (A -> ~ B) -> B -> ~ A.  (* замінити Admitted на 
+  Proof. <доведення> Qed. *)
 Admitted.
 
 End PLaxioms.

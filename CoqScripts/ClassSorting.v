@@ -30,24 +30,47 @@ Let HCmp1 := @cmp1 X cmp HComparable.
 Let HCmp2 := @cmp2 X cmp HComparable.
 Let HCmp3 := @cmp3 X cmp HComparable.
 
-Definition eq_dec (x y : X) : {x = y} + {x <> y}.
-Proof.
-  assert (HEL : forall x : X, x = x). { trivial. }
-  destruct (cmp x y) eqn: HV; try (left; apply HCmp1; assumption);
-  right; intro HE; rewrite HE in HV; pose (HV' := proj2 (HCmp1 y y) (HEL y));
-  rewrite HV' in HV; discriminate HV.
-Defined.
+Definition lt: X -> X -> Prop := fun x y => cmp x y = Lt.
+Definition le: X -> X -> Prop := fun x y => lt x y \/ x = y.
 
-Definition lt : X -> X -> Prop := fun x y => cmp x y = Lt.
-Definition le : X -> X -> Prop := fun x y => lt x y \/ x = y.
-
-Definition le_gt_dec (x y : X) : {le x y} + {lt y x}.
+Lemma lt_irrefl: forall x: X, ~ lt x x.
 Proof.
-  destruct (cmp x y) eqn: HV.
+  intros * H.
+  assert (H1: cmp x x = Eq). { apply HCmp1. reflexivity. }
+  (* unfold lt in H. *) rewrite H in H1. discriminate H1.
+Qed.
+
+Lemma lt_trans: forall x y z: X, lt x y -> lt y z -> lt x z.
+Proof.
+  intros * H1 H2. apply HCmp3 with y; assumption.
+Qed. 
+
+Definition lt_eq_lt_dec (x y : X) : {lt x y} + {x = y} + {lt y x}.
+Proof.
+  destruct (cmp x y) eqn: V.
   - left. right. apply HCmp1. assumption.
   - left. left. assumption.
   - right. apply HCmp2. assumption.
 Defined.
+
+Definition eq_dec (x y : X) : {x = y} + {x <> y}.
+Proof.
+  destruct (lt_eq_lt_dec x y) as [H | H].
+  2: { right. intro. rewrite H0 in H. apply lt_irrefl with y. assumption. }
+  destruct H as [H | H].
+  2: { left. assumption. }
+  right. intro. rewrite H0 in H. apply lt_irrefl with y. assumption.
+Defined.
+
+Definition le_gt_dec (x y : X) : {le x y} + {lt y x}.
+Proof.
+  destruct (lt_eq_lt_dec x y) as [H | H].
+  2: { right. assumption. }
+  destruct H as [H | H].
+  - left. left. assumption.
+  - left. right. assumption.
+Defined.
+
 
 Inductive sorted : list X -> Prop :=
   | sort0 : sorted []
@@ -58,9 +81,7 @@ Inductive sorted : list X -> Prop :=
 Fixpoint occnum (x : X) (lst : list X) : nat :=
   match lst with
   | [] => 0
-  | y :: lst' => if (eq_dec x y)
-                 then S (occnum x lst')
-                 else (occnum x lst')
+  | y :: lst' => let k:= occnum x lst' in if (eq_dec x y) then S k else k
   end.
 
 Definition same (lst1 lst2 : list X) : Prop :=
@@ -83,13 +104,13 @@ Proof.
   rewrite (H1 x). apply H2.
 Qed.
 
-Lemma same_ins :
+Lemma same_cons:
   forall x lst1 lst2, same lst1 lst2 -> same (x :: lst1) (x :: lst2).
 Proof.
   unfold same. intros x lst1 lst2 H1 y. simpl. rewrite H1. reflexivity.
 Qed.
 
-Lemma same_permute : forall x y lst1 lst2,
+Lemma same_permutation: forall x y lst1 lst2,
   same lst1 lst2 -> same (x :: y :: lst1) (y :: x :: lst2).
 Proof.
   unfold same. intros. simpl. rewrite (H x0).
@@ -97,6 +118,7 @@ Proof.
 Qed.
 
 End ComparableFacts.
+
 Arguments le_gt_dec {X} {cmp} {HComparable}.
 Arguments sorted {X} {cmp}.
 Arguments sort0 {X} {cmp}.
@@ -107,23 +129,21 @@ Arguments same {X} {cmp} {HComparable}.
 Arguments same_refl {X} {cmp} {HComparable}.
 Arguments same_symmetry {X} {cmp} {HComparable}.
 Arguments same_transitivity {X} {cmp} {HComparable}.
-Arguments same_ins {X} {cmp} {HComparable}.
-Arguments same_permute {X} {cmp} {HComparable}.
+Arguments same_cons {X} {cmp} {HComparable}.
+Arguments same_permutation {X} {cmp} {HComparable}.
 
-Check sorted.
-
-#[export]Hint Constructors sorted : sortHDB.
-#[export]Hint Unfold same : sortHDB.
-#[export]Hint Resolve
-  same_refl same_symmetry same_transitivity same_ins same_permute : sortHDB.
-
+#[global]Hint Constructors sorted : sortHDB.
+#[global]Hint Unfold same : sortHDB.
+#[global]Hint Resolve
+  same_refl same_symmetry same_transitivity
+  same_cons same_permutation : sortHDB.
 
 
 Section NatComparable.
-Definition nat_cmp := fix cmp (n m : nat) {struct n} : comparison :=
+Definition nat_cmp := fix self (n m : nat) {struct n} : comparison :=
   match n with
     0    => match m with 0 => Eq | _    => Lt end
-  | S n' => match m with 0 => Gt | S m' => cmp n' m' end
+  | S n' => match m with 0 => Gt | S m' => self n' m' end
   end.
 
 Instance natComparable : Comparable nat nat_cmp.
@@ -136,16 +156,17 @@ Proof.
       f_equal. apply IHx'. assumption.
     + simpl. destruct y as [| y']; try discriminate H. apply IHx'.
       injection H; trivial.
-  - intro. induction x as [| x' IHx']; intro; split; intro H1;
-    destruct y as [| y']; try discriminate H1; try reflexivity;
-    simpl in H1 |-*; apply IHx'; assumption.
-  - intro.
-    induction x as [| x' IHx']; intros * H1 H2.
-    + destruct y as [| y']; try discriminate H1.
-      destruct z as [| z']; discriminate H2 || reflexivity.
-    + destruct y as [| y']; try discriminate H1.
-      simpl in H1. destruct z as [| z']; try discriminate H2.
-      simpl in H2 |-*. apply (IHx' y' z'); trivial.
+  - intro. induction x as [| x' IHx']; intro; split; intro;
+    destruct y as [| y']; try discriminate H; try reflexivity;
+    simpl in H |-*; apply IHx'; assumption.
+  - intro. induction x as [| x' IHx']; intros * H1 H2.
+    + destruct z as [| z'].
+      2: { simpl. reflexivity. }
+      destruct y as [| y']; try discriminate H1.
+      simpl in H2. discriminate H2.
+    + destruct y as [| y']; try discriminate H1. simpl in H1.
+      destruct z as [| z']; try discriminate H2. simpl in H2 |-*.
+      apply (IHx' y' z'); trivial.
 Defined.
 End NatComparable.
 
@@ -159,16 +180,72 @@ Let HCmp1 := @cmp1 X cmp HComparable.
 Let HCmp2 := @cmp2 X cmp HComparable.
 Let HCmp3 := @cmp3 X cmp HComparable.
 
-Fixpoint aux_ins (x : X) (lst : list X) : list X :=
+Fixpoint aux_ins_sort (x : X) (lst : list X) : list X :=
   match lst with
-  | []        => []
+  | []        => [x]
   | y :: lst' => if (le_gt_dec x y)
                  then x :: y :: lst'
-                 else y :: (aux_ins x lst')
+                 else y :: (aux_ins_sort x lst')
   end. 
 
-Lemma aux_ins_sorted :
-  forall x (lst : list X), @sorted _ cmp lst -> @sorted _ cmp (aux_ins x lst).
+Lemma aux_ins_sort_same : forall x lst, same (aux_ins_sort x lst) (x :: lst).
+(* вставка у список в голову і за допомогою функції 'aux_ins_sort'
+   дають схожі списки                                                         *)
 Proof.
+  intros. revert x.
+  induction lst as [| y lst' IHlst'].
+  - auto with sortHDB.
+  - intro. pose (H1:= IHlst' x).
+    simpl. destruct (le_gt_dec x y) as [H | H].
+    + auto with sortHDB.
+    + assert (same (y :: x :: lst') (x :: y :: lst')). { auto with sortHDB. }
+      assert (same (y :: aux_ins_sort x lst') (y :: x :: lst')). {
+        auto with sortHDB. }
+      now apply same_transitivity with (y :: x :: lst').
+Qed.
 
+Lemma aux_ins_sort_inv :
+  forall x lst, @sorted _ cmp lst -> @sorted _ cmp (aux_ins_sort x lst).
+  (* функція 'aux_ins_sort' зберігає відсортованість списку                 *)
+Proof.
+  intros. elim H; simpl. 
+  - auto with sortHDB.
+  - intro y.
+    destruct (le_gt_dec x y) as [H1 | H1]; constructor;
+    assumption || constructor. assumption.
+  - intros y z lst' H1 H2 H3.
+    destruct (le_gt_dec x y) as [H0 | H0]; simpl.
+    + constructor; try assumption. constructor; assumption.
+    + destruct (le_gt_dec x z) as [H4 | H4]; auto with sortHDB.
+      constructor; try assumption. left. assumption.
+Qed.
+
+Fixpoint ins_sort (lst : list X) : list X :=
+(* функція сортування вставкою                                              *)
+  match lst with
+  | [] => []
+  | n :: lst' => aux_ins_sort n (ins_sort lst')
+  end.
+
+Definition Correctness (f : list X -> list X) : Prop := 
+  forall lst : list X, same lst (f lst) /\ @sorted _ cmp (f lst).
+
+Theorem ins_sort_certified : Correctness ins_sort.
+(* сертифікована функція сортування вставкою                                *)
+Proof.
+  intro. split.
+  - induction lst as [| y lst' IHlst'].
+    + auto with sortHDB.
+    + simpl.
+      assert (same (y :: lst') (y :: (ins_sort lst'))). { auto with sortHDB. }
+      assert (same (aux_ins_sort y (ins_sort lst')) (y :: (ins_sort lst'))). {
+        apply aux_ins_sort_same. }
+      apply same_symmetry in H0.
+      apply same_transitivity with (y :: ins_sort lst'); assumption.
+  - induction lst as [| x lst' IHlst'].
+    + constructor.
+    + simpl. apply aux_ins_sort_inv. assumption.
+Qed.
 End InsertSort.
+
+
