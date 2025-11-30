@@ -55,8 +55,8 @@ Proof.
   - simpl. reflexivity.
   - intros. simpl. reflexivity.
   - intros. simpl. reflexivity.
-  - intros * H0 H1 s0.
-    induction s0 as [| x s0' IHs0']; trivial.
+  - intros * H0 H1 *.
+    induction s as [| x s' IHs']; trivial.
     apply H1. assumption.
 Defined.
 
@@ -64,36 +64,13 @@ End InductiveStack.
 
 
 Section ListStack.
-Variable data: Set.
-
-Definition LStack:= list data.
-
-Definition lempty:= @nil data.
-
-Definition lpush (x: data) (s: LStack): LStack:= x :: s.
-
-Definition lpop (s: LStack): option LStack:=
-  match s with
-    | []      => None
-    | _ :: s' => Some s'
-  end.
-
-Definition ltop (s: LStack): option data:=
-  match s with
-    | []     => None
-    | x :: _ => Some x
-  end.
-
-Definition lisempty (s: LStack): bool:=
-  match s with
-    | [] => true
-    | _  => false
-  end.
-
-Instance LStackRealization:
-  aStack data LStack lempty lpush lpop ltop lisempty.
-Proof.
-Admitted.
-
+(* Наведіть ТУТ таку реалізацію стеку:
+   - stack:= list data
+   - empty - порожній список
+   - push - додавання елементу даних на початку списку
+   - pop - видалення елементу з початку списку
+   - top - повертає елемент з початку списку, без його видалення
+   - isempty - повертає true, якщо список порожній, інакше повертає false
+  *)
 End ListStack.
 
