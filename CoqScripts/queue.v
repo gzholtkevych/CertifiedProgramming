@@ -1,5 +1,6 @@
 Require Import Lists.List.
 Import ListNotations.
+Open Scope type_scope.
 
 
 Class aQueue (data: Set) (queue: Set)
@@ -69,7 +70,7 @@ Proof.
     induction q as [| x q' IHq']; trivial.
     apply H1. assumption.
 Defined. 
-Section EndQueue.
+End InductiveQueue.
 
 Section ListQueue.
 (* Наведіть ТУТ таку реалізацію черги:
@@ -83,4 +84,59 @@ Section ListQueue.
 End ListQueue.
 
 
+Section ImprovedListQueue.
+Variable data: Set.
+
+Fixpoint reverse_acc (lst1 lst2: list data) {struct lst2}: list data:=
+  match lst2 with
+    | [] => lst1
+    | x :: lst2' => x :: reverse_acc lst1 lst2'
+  end.
+
+Definition reverse (lst: list data): list data:= reverse_acc [] lst.
+
+Record ilqueue: Set:= { front: list data; back: list data}.
+
+Definition reorganize (q: ilqueue): ilqueue:=
+  match front q, back q with
+    | [], [] => q
+    | [], _  => {| front:= reverse (back q); back:= [] |}
+    | _, _   => q
+  end.
+
+Lemma reoganize_prop1:
+  forall q: ilqueue, front (reorganize q) = [] -> back (reorganize q) = [].
+Proof.
+  intros. destruct q as [fq bq].
+  destruct fq, bq; trivial. (*
+  - simpl. reflexivity.
+  - simpl. reflexivity.
+  - simpl. reflexivity. *)
+  simpl in H |-*. discriminate H.
+Qed.
+
+Definition ilempty: ilqueue:= {| front:= []; back:= [] |}.
+Definition ilappend (x: data) (q: ilqueue): ilqueue:=
+  {| front:= front q; back:= x :: back q |}.
+
+Definition ilpop (q: ilqueue): option ilqueue:=
+  let q':= reorganize q in
+  match front q' with
+    | [] => None
+    | _  => Some {| front:= tl (front q'); back:= back q' |}
+  end.
+
+Definition iltop (q: ilqueue): option data:=
+  let q':= reorganize q in
+  match front q' with
+    | [] => None
+    | _  => hd_error (front q')
+  end. 
+
+Definition ilisempty (q: ilqueue): bool:=
+  match front q, back q with
+    | [], [] => true
+    | _, _  => false
+  end.
+End ImprovedListQueue.
 
