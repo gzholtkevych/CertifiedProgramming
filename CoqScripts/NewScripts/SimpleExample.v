@@ -1,4 +1,4 @@
-Require Import Coq.Lists.List.
+From Stdlib Require Import Lists.List.
 Import ListNotations.
 
 (* Про цей проєкт:
@@ -223,7 +223,7 @@ Abort.
 
 (* Асоциативність конкатенації списків -------------------------------------- *)
 (* Знайти все, де використовується ++ *) Search " ++ ".
-(* Перевіремо app_assoc_reverse       *) Check app_assoc_reverse.
+(* Перевіремо app_assoc_reverse       *) Check app_assoc.
 
 
 Lemma seq_calc : forall (s : stack) (e : expr) (p : program),
@@ -231,12 +231,12 @@ Lemma seq_calc : forall (s : stack) (e : expr) (p : program),
 Proof.
   intros until e. revert s.
   induction e.
-  -(* індукція для Const *) intros. simpl. reflexivity.
-  -(* індукція для Binop *)
+  -(* індукція для const *) intros. simpl. reflexivity.
+  -(* індукція для binop *)
     intros. simpl.
-    rewrite app_assoc_reverse.
-    rewrite IHe2.
-    rewrite app_assoc_reverse. simpl.
+    rewrite <- app_assoc.
+    rewrite IHe2 .
+    rewrite <- app_assoc. simpl.
     rewrite IHe1; trivial. 
 Qed.
 
