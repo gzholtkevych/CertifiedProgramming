@@ -91,8 +91,9 @@ Qed.
 
 Lemma and_comm' : A /\ B <-> B /\ A.
 Proof. split; intro; destruct H; split; assumption. Qed.
-
+Check and_comm.
 Print Term and_comm.
+
 Print Term and_comm'.
 
 Lemma and_assoc : (A /\ B) /\ C <-> A /\ (B /\ C).

@@ -26,13 +26,13 @@ Print sorted.
 
 Example s12345 : sorted [1; 2; 3; 4; 5].
 Proof.
-(* Можна так:
+  (* Можна так:
   apply sortS. apply le_S. apply le_n.
   apply sortS. apply le_S. apply le_n.
   apply sortS. apply le_S. apply le_n.
   apply sortS. apply le_S. apply le_n.
   apply sort1.
-Але оскільки ми застосовуємо тільки конструктори, то можна і так *)
+  Але оскільки ми застосовуємо тільки конструктори, то можна і так *)
   repeat constructor.
 Qed.
 
